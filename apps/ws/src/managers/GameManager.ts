@@ -27,7 +27,7 @@ class GameManager {
   removeUser(ws: WebSocket) {
     const user = this.users.find((user) => user.socket === ws);
     if (!user) {
-      console.error("User not found?");
+      console.error("User not found!!");
       return;
     }
     this.users = this.users.filter((user) => user.socket !== ws);
@@ -40,7 +40,7 @@ class GameManager {
         if (this.pendingGameId) {
           const game = this.games.find((x) => x.gameId === this.pendingGameId);
           if (!game) {
-            console.error("Pending game not found?");
+            console.error("Pending game not found");
             return;
           }
           if (
@@ -49,8 +49,7 @@ class GameManager {
             user === game.player3User ||
             user === game.player4User
           ) {
-            userManager.broadcast(
-              game.gameId,
+            user.socket.send(
               JSON.stringify({
                 type: GAME_ALERT,
                 payload: {
@@ -61,7 +60,7 @@ class GameManager {
             return;
           }
           userManager.addUser(user, game.gameId);
-          await game?.updatePlayer(user);
+          await game.updatePlayer(user);
           this.pendingGameId = null;
         } else {
           const game = new Game(user, null, null, null);

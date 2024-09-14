@@ -1,13 +1,12 @@
-import { WebSocket } from "ws";
 import { User } from "../classes/User";
 
 class UserManager {
-  private interestedSockets: Map<string, User[]>;
-  private userRoomMapping: Map<User, string>;
+  private interestedGames: Map<string, User[]>;
+  private userGameMapping: Map<User, string>;
   private static instance: UserManager;
   private constructor() {
-    this.interestedSockets = new Map();
-    this.userRoomMapping = new Map();
+    this.interestedGames = new Map();
+    this.userGameMapping = new Map();
   }
   public static getInstance() {
     if (!this.instance) {
@@ -15,17 +14,17 @@ class UserManager {
     }
     return this.instance;
   }
-  addUser(user: User, roomId: string) {
-    this.interestedSockets.set(roomId, [
-      ...(this.interestedSockets.get(roomId) || []),
+  addUser(user: User, gameId: string) {
+    this.interestedGames.set(gameId, [
+      ...(this.interestedGames.get(gameId) || []),
       user,
     ]);
-    this.userRoomMapping.set(user, roomId);
+    this.userGameMapping.set(user, gameId);
   }
-  broadcast(roomId: string, message: string) {
-    const users = this.interestedSockets.get(roomId);
+  broadcast(gameId: string, message: string) {
+    const users = this.interestedGames.get(gameId);
     if (!users) {
-      console.error("No users in room?");
+      console.error("No users in room");
       return;
     }
     users.forEach((user) => {
@@ -33,18 +32,18 @@ class UserManager {
     });
   }
   removeUser(user: User) {
-    const roomId = this.userRoomMapping.get(user);
-    if (!roomId) {
-      console.error("User was not interested in any room?");
+    const gameId = this.userGameMapping.get(user);
+    if (!gameId) {
+      console.error("User was not interested in any game");
       return;
     }
-    const room = this.interestedSockets.get(roomId) || [];
-    const remainingUsers = room.filter((u) => u !== user);
-    this.interestedSockets.set(roomId, remainingUsers);
-    if (this.interestedSockets.get(roomId)?.length === 0) {
-      this.interestedSockets.delete(roomId);
+    const game = this.interestedGames.get(gameId) || [];
+    const remainingUsers = game.filter((u) => u !== user);
+    this.interestedGames.set(gameId, remainingUsers);
+    if (this.interestedGames.get(gameId)?.length === 0) {
+      this.interestedGames.delete(gameId);
     }
-    this.userRoomMapping.delete(user);
+    this.userGameMapping.delete(user);
   }
 }
 
