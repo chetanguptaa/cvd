@@ -1,7 +1,5 @@
 import { randomUUID } from "crypto";
 import { GAME_RESULT } from "../types";
-import { WebSocket } from "ws";
-import prisma from "@repo/db";
 import { User } from "./User";
 
 export class Game {
