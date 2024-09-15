@@ -1,12 +1,50 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { BACKEND_URL } from "@/constants";
+import { useToast } from "@/hooks/use-toast";
 import { TSignin } from "@repo/common";
-import { useForm } from "react-hook-form";
+import axios, { AxiosError } from "axios";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 
 const LoginForm = () => {
-  const { register } = useForm<TSignin>();
+  const { toast } = useToast();
+  const { register, handleSubmit } = useForm<TSignin>();
+  const navigate = useNavigate();
+
+  const submit: SubmitHandler<TSignin> = async (data) => {
+    try {
+      await axios.post(
+        BACKEND_URL + "/auth/signin",
+        {
+          email: data.email,
+          password: data.password,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      toast({
+        title: "Signed in successfully",
+      });
+      navigate("/");
+    } catch (e: unknown) {
+      if (e instanceof AxiosError) {
+        toast({
+          title: e.response?.data.error,
+        });
+      } else {
+        toast({
+          title: "Some error occured, please try again later",
+        });
+      }
+    }
+  };
+
   return (
-    <form className="space-y-4">
+    <form className="space-y-4" onSubmit={handleSubmit(submit)}>
       <div>
         <Label htmlFor="email">Email</Label>
         <Input

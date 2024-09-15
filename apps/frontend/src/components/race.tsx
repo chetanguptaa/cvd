@@ -8,6 +8,7 @@ export default function TypingPractice() {
   const [userInput, setUserInput] = useState("");
   const [isCompleted, setIsCompleted] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const textDisplayRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (inputRef.current) {
@@ -25,15 +26,30 @@ export default function TypingPractice() {
     }
   };
 
+  const handleTextClick = () => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  };
+
   const progress = userInput.length / targetText.length;
   const carPosition = `${Math.min(progress * 100, 100)}%`;
 
   return (
     <div className="max-w-2xl mx-auto p-4 space-y-4">
       <h1 className="text-2xl font-bold text-center">Typing Practice</h1>
-      <div className="bg-gray-100 p-4 rounded-lg">
+      <div
+        className="bg-gray-100 p-4 rounded-lg relative cursor-text"
+        onClick={handleTextClick}
+        role="textbox"
+        tabIndex={0}
+        aria-label="Typing area"
+      >
         <p className="text-lg mb-2">Type the following text:</p>
-        <p className="text-xl font-mono whitespace-pre-wrap break-all">
+        <div
+          ref={textDisplayRef}
+          className="text-xl font-mono whitespace-pre-wrap break-all relative"
+        >
           {targetText.split("").map((char, index) => (
             <span
               key={index}
@@ -42,26 +58,27 @@ export default function TypingPractice() {
                 : index < userInput.length ?
                   userInput[index] === char ?
                     "text-gray-500"
-                  : "text-red-500"
+                  : "text-red-500 bg-red-100"
                 : ""
               }`}
             >
               {char}
             </span>
           ))}
-        </p>
+        </div>
+        <input
+          ref={inputRef}
+          type="text"
+          value={userInput}
+          onChange={handleInputChange}
+          disabled={isCompleted}
+          className="absolute top-0 left-0 w-full h-full opacity-0 cursor-default"
+          spellCheck="false"
+          autoCorrect="off"
+          autoCapitalize="off"
+          aria-hidden="true"
+        />
       </div>
-      <input
-        ref={inputRef}
-        type="text"
-        value={userInput}
-        onChange={handleInputChange}
-        disabled={isCompleted}
-        className="w-full p-2 text-lg font-mono border rounded"
-        spellCheck="false"
-        autoCorrect="off"
-        autoCapitalize="off"
-      />
       <p className="text-sm text-gray-600">
         Progress:{" "}
         {

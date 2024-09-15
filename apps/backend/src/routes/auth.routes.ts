@@ -15,7 +15,7 @@ authRouter.post("/signup", async (req: Request, res: Response) => {
     const parsed = SignupSchema.safeParse(req.body);
     if (parsed.error) {
       return res.status(404).json({
-        error: "Bad request",
+        error: parsed.error,
       });
     }
     const hashedPassword = await bcrypt.hash(parsed.data.password, 12);
@@ -49,7 +49,7 @@ authRouter.post("/signin", async (req: Request, res: Response) => {
     const parsed = SigninSchema.safeParse(req.body);
     if (parsed.error) {
       return res.status(404).json({
-        error: "Bad request",
+        error: parsed.error,
       });
     }
     const user = await prisma.user.findFirst({

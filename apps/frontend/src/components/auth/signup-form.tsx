@@ -1,12 +1,56 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { BACKEND_URL } from "@/constants";
+import { useToast } from "@/hooks/use-toast";
 import { TSignup } from "@repo/common";
-import { useForm } from "react-hook-form";
+import axios, { AxiosError } from "axios";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 
 const SignupForm = () => {
-  const { register } = useForm<TSignup>();
+  const { toast } = useToast();
+  const { register, handleSubmit } = useForm<TSignup>();
+  const navigate = useNavigate();
+
+  // TODO add google and apple Authentication
+  const submit: SubmitHandler<TSignup> = async (data) => {
+    try {
+      const res = await axios.post(
+        BACKEND_URL + "/auth/signup",
+        {
+          email: data.email,
+          password: data.password,
+          name: data.name,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (res.data) {
+        console.log(res.data);
+        localStorage.setItem("authorization", res.data.token);
+        toast({
+          title: "Signed up successfully",
+        });
+        navigate("/");
+      }
+    } catch (e: unknown) {
+      if (e instanceof AxiosError) {
+        toast({
+          title: e.response?.data.error,
+        });
+      } else {
+        toast({
+          title: "Some error occured, please try again later",
+        });
+      }
+    }
+  };
+
   return (
-    <form className="space-y-4">
+    <form className="space-y-4" onSubmit={handleSubmit(submit)}>
       <div>
         <Label htmlFor="email">Email</Label>
         <Input
