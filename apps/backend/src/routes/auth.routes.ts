@@ -2,9 +2,10 @@ import { config } from "dotenv";
 config();
 import { Request, Response, Router } from "express";
 import bcrypt from "bcryptjs";
-import { SigninSchema, SignupSchema } from "@repo/common";
+import { SigninSchema, SignupSchema, CreateGuestSchema } from "@repo/common";
 import prisma from "@repo/db";
 import jwt from "jsonwebtoken";
+import randomName from "../utils/random-name";
 
 const JWT_SECRET = process.env.JWT_SECRET!;
 
@@ -77,6 +78,36 @@ authRouter.post("/signin", async (req: Request, res: Response) => {
     );
     return res.status(200).json({
       message: "Signed in successfully",
+      token,
+    });
+  } catch (error) {
+    return res.status(404).json({
+      error: "some error occoured, please try again later",
+    });
+  }
+});
+
+authRouter.post("/guest/signup", async (req: Request, res: Response) => {
+  try {
+    const parsed = CreateGuestSchema.safeParse(req.body);
+    if (parsed.error) {
+      return res.status(400).json({
+        error: "Some error occured, please try again later",
+      });
+    }
+    const name = randomName(parsed.data.name);
+    const guest = await prisma.guest.create({
+      data: {
+        username: name,
+      },
+    });
+    const token = jwt.sign(
+      {
+        id: guest.id,
+      },
+      JWT_SECRET
+    );
+    return res.status(201).json({
       token,
     });
   } catch (error) {

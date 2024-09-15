@@ -4,8 +4,7 @@ const userRouter: Router = Router();
 
 userRouter.get("", (req: Request, res: Response) => {
   try {
-    const user = req.user;
-    return res.status(200).json(user);
+    return res.status(200).json(req.user);
   } catch (error) {
     return res.status(404).json({
       error: "some error occoured, please try again later",

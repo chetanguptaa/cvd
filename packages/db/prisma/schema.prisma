@@ -14,11 +14,19 @@ datasource db {
 }
 
 model User {
-  id       String     @id @default(dbgenerated("concat('usr_', replace(cast(gen_random_uuid() as text), '-', ''))")) @db.Text
-  email    String     @unique()
-  name     String?
-  password String
-  games    UserGame[]
+  id        String     @id @default(dbgenerated("concat('usr_', replace(cast(gen_random_uuid() as text), '-', ''))")) @db.Text
+  email     String     @unique
+  password  String
+  name      String?
+  games     UserGame[]
+  createdAt DateTime   @default(now())
+}
+
+model Guest {
+  id        String     @id @default(dbgenerated("concat('gst_', replace(cast(gen_random_uuid() as text), '-', ''))")) @db.Text
+  username  String     @unique
+  games     UserGame[]
+  createdAt DateTime   @default(now())
 }
 
 model Game {
@@ -27,9 +35,11 @@ model Game {
 }
 
 model UserGame {
-  id     String @id @default(dbgenerated("concat('usg_', replace(cast(gen_random_uuid() as text), '-', ''))")) @db.Text
-  user   User   @relation(fields: [userId], references: [id])
-  userId String
-  game   Game   @relation(fields: [gameId], references: [id])
-  gameId String
+  id      String  @id @default(dbgenerated("concat('usg_', replace(cast(gen_random_uuid() as text), '-', ''))")) @db.Text
+  user    User?   @relation(fields: [userId], references: [id])
+  userId  String?
+  game    Game    @relation(fields: [gameId], references: [id])
+  gameId  String
+  Guest   Guest?  @relation(fields: [guestId], references: [id])
+  guestId String? @db.Text
 }

@@ -1,5 +1,5 @@
+import MainLoader from "@/components/ui/loader";
 import userAtom from "@/store/atoms/userAtom";
-import { Loader } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useRecoilValueLoadable } from "recoil";
 
@@ -10,11 +10,7 @@ const AuthWrapper = ({ children }: { children: React.ReactNode }) => {
     navigate("/");
     return;
   } else if (user.state === "loading") {
-    return (
-      <div className="flex justify-center items-center h-[100vh]">
-        <Loader className="animate-spin h-12 w-12  text-purple-300" />
-      </div>
-    );
+    return <MainLoader />;
   } else {
     return <>{children}</>;
   }
