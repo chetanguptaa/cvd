@@ -13,17 +13,23 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Game {
-  id     String     @id @default(dbgenerated("concat('gme_', replace(cast(gen_random_uuid() as text), '-', ''))")) @db.Text
-  users  String[]
-  status GameStatus @default(NOT_STARTED_YET)
+model User {
+  id       String     @id @default(dbgenerated("concat('usr_', replace(cast(gen_random_uuid() as text), '-', ''))")) @db.Text
+  email    String     @unique()
+  name     String?
+  password String
+  games    UserGame[]
 }
 
-enum GameStatus {
-  IN_PROGRESS
-  COMPLETED
-  ABANDONED
-  TIME_UP
-  PLAYER_EXIT
-  NOT_STARTED_YET
+model Game {
+  id    String     @id @default(dbgenerated("concat('gam_', replace(cast(gen_random_uuid() as text), '-', ''))")) @db.Text
+  users UserGame[]
+}
+
+model UserGame {
+  id     String @id @default(dbgenerated("concat('usg_', replace(cast(gen_random_uuid() as text), '-', ''))")) @db.Text
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+  game   Game   @relation(fields: [gameId], references: [id])
+  gameId String
 }

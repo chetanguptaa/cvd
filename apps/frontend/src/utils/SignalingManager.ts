@@ -6,13 +6,11 @@ export class SignalingManager {
   private static instance: SignalingManager;
   private bufferedMessages: any[] = [];
   private callbacks: any = {};
-  private id: number;
   private initialized: boolean = false;
 
   private constructor() {
     this.ws = new WebSocket(BASE_URL);
     this.bufferedMessages = [];
-    this.id = 1;
     this.init();
   }
 
@@ -43,7 +41,6 @@ export class SignalingManager {
   sendMessage(message: any) {
     const messageToSend = {
       ...message,
-      id: this.id++,
     };
     if (!this.initialized) {
       this.bufferedMessages.push(messageToSend);

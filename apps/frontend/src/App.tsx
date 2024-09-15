@@ -1,12 +1,13 @@
-import Header from "./components/header";
-import MainContent from "./components/main-content";
+import { Route, Routes } from "react-router-dom";
+import SigninPage from "./pages/auth/signin";
+import SignupPage from "./pages/auth/signup";
 
 function App() {
   return (
-    <div className="h-[75vh]">
-      <Header />
-      <MainContent />
-    </div>
+    <Routes>
+      <Route path="/auth/signin" element={<SigninPage />} />
+      <Route path="/auth/signup" element={<SignupPage />} />
+    </Routes>
   );
 }
 
