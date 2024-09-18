@@ -2,9 +2,9 @@
   "name": "ws",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "tsc -b && node dist/index.js"
   },
   "keywords": [],
   "author": "",
