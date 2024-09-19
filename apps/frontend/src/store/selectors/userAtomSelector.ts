@@ -1,5 +1,5 @@
 import { BACKEND_URL } from "@/constants";
-import { IUser } from "@repo/common";
+import { IUser } from "@vr/common";
 import axios from "axios";
 import { selector } from "recoil";
 

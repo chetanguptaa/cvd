@@ -2,7 +2,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { BACKEND_URL } from "@/constants";
 import { useToast } from "@/hooks/use-toast";
-import { TSignup } from "@repo/common";
+import { TSignup } from "@vr/common";
 import axios, { AxiosError } from "axios";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";

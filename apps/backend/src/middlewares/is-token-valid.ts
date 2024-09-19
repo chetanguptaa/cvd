@@ -1,4 +1,4 @@
-import { IUser } from "@repo/common";
+import { IUser } from "@vr/common";
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 

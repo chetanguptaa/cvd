@@ -1,5 +1,5 @@
 import { BACKEND_URL } from "@/constants";
-import { IGuest } from "@repo/common";
+import { IGuest } from "@vr/common";
 import axios from "axios";
 import { selector } from "recoil";
 

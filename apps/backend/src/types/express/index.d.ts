@@ -1,4 +1,4 @@
-import { IGuest, IUser } from "@repo/common";
+import { IGuest, IUser } from "@vr/common";
 
 export {};
 

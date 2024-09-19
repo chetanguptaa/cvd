@@ -2,8 +2,8 @@ import { config } from "dotenv";
 config();
 import { Request, Response, Router } from "express";
 import bcrypt from "bcryptjs";
-import { SigninSchema, SignupSchema, CreateGuestSchema } from "@repo/common";
-import prisma from "@repo/db";
+import { SigninSchema, SignupSchema, CreateGuestSchema } from "@vr/common";
+import prisma from "@vr/db";
 import jwt from "jsonwebtoken";
 import randomName from "../utils/random-name";
 

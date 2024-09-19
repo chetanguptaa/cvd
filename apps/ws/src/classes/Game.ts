@@ -1,7 +1,7 @@
 import { randomUUID } from "crypto";
 import { GAME_RESULT, INIT_GAME } from "../types";
 import { User } from "./User";
-import prisma from "@repo/db";
+import prisma from "@vr/db";
 import { userManager } from "../managers/UserManager";
 
 export class Game {

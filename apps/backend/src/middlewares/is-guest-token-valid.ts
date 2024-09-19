@@ -1,4 +1,4 @@
-import { IGuest } from "@repo/common";
+import { IGuest } from "@vr/common";
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 
