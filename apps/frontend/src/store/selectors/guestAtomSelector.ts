@@ -8,7 +8,7 @@ const guestAtomSelector = selector({
   get: async () => {
     const res = await axios.get<IGuest>(`${BACKEND_URL}/guest`, {
       headers: {
-        authorization: `Bearer ${localStorage.getItem("authorization")}`,
+        authorization: `Bearer ${localStorage.getItem("guest_auth_token")}`,
       },
     });
     return res.data;

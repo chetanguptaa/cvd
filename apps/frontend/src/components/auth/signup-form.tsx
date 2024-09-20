@@ -2,15 +2,18 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { BACKEND_URL } from "@/constants";
 import { useToast } from "@/hooks/use-toast";
+import userAtom from "@/store/atoms/userAtom";
 import { TSignup } from "@vr/common";
 import axios, { AxiosError } from "axios";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
+import { useRecoilRefresher_UNSTABLE } from "recoil";
 
 const SignupForm = () => {
   const { toast } = useToast();
   const { register, handleSubmit } = useForm<TSignup>();
   const navigate = useNavigate();
+  const refreshUser = useRecoilRefresher_UNSTABLE(userAtom);
 
   // TODO add google and apple Authentication
   const submit: SubmitHandler<TSignup> = async (data) => {
@@ -29,11 +32,11 @@ const SignupForm = () => {
         }
       );
       if (res.data) {
-        console.log(res.data);
-        localStorage.setItem("authorization", res.data.token);
+        localStorage.setItem("auth_token", res.data.token);
         toast({
           title: "Signed up successfully",
         });
+        refreshUser();
         navigate("/");
       }
     } catch (e: unknown) {

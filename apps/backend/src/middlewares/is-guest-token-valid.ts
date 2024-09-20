@@ -17,7 +17,14 @@ const isGuestTokenValid = async (
       });
     }
     const token = auth_header.split("Bearer ")[1];
-    const guest_data = jwt.verify(token, JWT_SECRET) as IGuest;
+    const guest_data = jwt.verify(token, JWT_SECRET) as IGuest & {
+      email: string;
+    };
+    console.log(guest_data);
+
+    if (guest_data.email) {
+      throw new Error();
+    }
     req.guest = guest_data;
     next();
   } catch (err: any) {

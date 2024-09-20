@@ -8,7 +8,7 @@ const userAtomSelector = selector({
   get: async () => {
     const res = await axios.get<IUser>(`${BACKEND_URL}/user`, {
       headers: {
-        authorization: `Bearer ${localStorage.getItem("authorization")}`,
+        authorization: `Bearer ${localStorage.getItem("auth_token")}`,
       },
     });
     return res.data;

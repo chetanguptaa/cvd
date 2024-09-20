@@ -1,3 +1,4 @@
+import GuestForm from "@/components/auth/guest-form";
 import SignupForm from "@/components/auth/signup-form";
 import { Icons } from "@/components/header/icons";
 import AuthWrapper from "@/wrappers/auth";
@@ -11,7 +12,7 @@ const SignupPage = () => {
           <div className="absolute bottom-0 left-0 right-0 top-0 bg-[radial-gradient(circle_500px_at_50%_200px,#C9EBFF,transparent)] h-full"></div>
         </div>
         <div className="absolute bottom-0 left-0 right-0 top-0 bg-[radial-gradient(circle_500px_at_50%_200px,#C9EBFF,transparent)] h-full"></div>
-        <div className="absolute top-0 z-[-1] h-screen w-screen  "></div>
+        <div className="absolute top-0 z-[-1] h-screen w-screen"></div>
         <div className="mx-auto z-10 text-gray-700 w-full max-w-[500px]">
           <div className="mb-8 text-center">
             <h1 className="text-3xl font-normal font-geist tracking-tighter">
@@ -42,6 +43,7 @@ const SignupPage = () => {
               </button>
             </div>
           </div>
+          <GuestForm />
         </div>
       </div>
     </AuthWrapper>

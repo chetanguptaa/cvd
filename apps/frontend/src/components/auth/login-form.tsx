@@ -2,19 +2,22 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { BACKEND_URL } from "@/constants";
 import { useToast } from "@/hooks/use-toast";
+import userAtom from "@/store/atoms/userAtom";
 import { TSignin } from "@vr/common";
 import axios, { AxiosError } from "axios";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
+import { useRecoilRefresher_UNSTABLE } from "recoil";
 
 const LoginForm = () => {
   const { toast } = useToast();
   const { register, handleSubmit } = useForm<TSignin>();
   const navigate = useNavigate();
+  const refreshUser = useRecoilRefresher_UNSTABLE(userAtom);
 
   const submit: SubmitHandler<TSignin> = async (data) => {
     try {
-      await axios.post(
+      const res = await axios.post(
         BACKEND_URL + "/auth/signin",
         {
           email: data.email,
@@ -26,10 +29,14 @@ const LoginForm = () => {
           },
         }
       );
-      toast({
-        title: "Signed in successfully",
-      });
-      navigate("/");
+      if (res.data) {
+        localStorage.setItem("auth_token", res.data.token);
+        toast({
+          title: "Signed in successfully",
+        });
+        refreshUser();
+        navigate("/");
+      }
     } catch (e: unknown) {
       if (e instanceof AxiosError) {
         toast({
