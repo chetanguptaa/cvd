@@ -20,8 +20,6 @@ const isGuestTokenValid = async (
     const guest_data = jwt.verify(token, JWT_SECRET) as IGuest & {
       email: string;
     };
-    console.log(guest_data);
-
     if (guest_data.email) {
       throw new Error();
     }

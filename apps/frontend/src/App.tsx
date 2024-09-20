@@ -12,8 +12,6 @@ import guestAtom from "./store/atoms/guestAtom";
 function App() {
   const user = useRecoilValueLoadable(userAtom);
   const guest = useRecoilValueLoadable(guestAtom);
-  console.log(user.valueMaybe());
-  console.log(guest.valueMaybe());
 
   return (
     <Suspense fallback={<MainLoader />}>
