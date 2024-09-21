@@ -1,24 +1,18 @@
 import * as React from "react";
 import { ChevronsUpDown } from "lucide-react";
-import { useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { snippetLanguages } from "@/config/languages";
 
 const LanguageDropdown = ({
   className,
   value,
-  onChange,
 }: {
   className?: string;
   value: string;
   onChange: (props: React.SetStateAction<string>) => void;
 }) => {
-  useEffect(() => {
-    const savedCodeLanguage = window.localStorage.getItem("codeLanguage");
-    if (savedCodeLanguage) {
-      onChange(savedCodeLanguage);
-    }
-  }, []);
+  // TODO add more languages
+  window.localStorage.setItem("codeLanguage", "go");
 
   return (
     <div

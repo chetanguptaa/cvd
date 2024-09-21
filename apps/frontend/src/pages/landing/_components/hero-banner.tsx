@@ -62,7 +62,7 @@ export default function HeroBanner() {
           <Button
             onClick={handleClick}
             title="Start Racing"
-            className="flex items-center gap-2 px-4 py-2 font-medium tracking-wider text-black transition-colors rounded-md w-fit bg-warning md:text-2xl ring-offset-background bg-primary"
+            className="flex items-center gap-2 px-4 py-2 font-medium tracking-wider text-white transition-colors rounded-md w-fit bg-warning md:text-2xl ring-offset-background bg-primary"
             data-cy="start-racing-button"
           >
             Start Racing <ArrowRight />

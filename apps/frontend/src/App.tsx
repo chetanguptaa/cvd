@@ -4,7 +4,7 @@ import SignupPage from "./pages/auth/signup";
 import { Suspense } from "react";
 import LandingPage from "./pages/landing/landing";
 import MainLoader from "./components/ui/loader";
-import RacePage from "./pages/app/race";
+import RacePage from "./pages/app/race/race";
 import Header from "./components/header";
 
 function App() {
