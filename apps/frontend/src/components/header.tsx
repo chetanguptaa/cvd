@@ -4,21 +4,15 @@ import userAtom from "@/store/atoms/userAtom";
 import { ChevronRight } from "lucide-react";
 import { Button } from "./ui/button";
 import MainLoader from "./ui/loader";
-import guestAtom from "@/store/atoms/guestAtom";
 
 const Header = () => {
   const user = useRecoilValueLoadable(userAtom);
-  const guest = useRecoilValueLoadable(guestAtom);
   const refreshUser = useRecoilRefresher_UNSTABLE(userAtom);
-  const refreshGuest = useRecoilRefresher_UNSTABLE(guestAtom);
   const navigate = useNavigate();
   let content: React.ReactNode;
-  if (user.state === "loading" || guest.state === "loading") {
+  if (user.state === "loading") {
     content = <MainLoader />;
-  } else if (
-    (user.state === "hasValue" && user.contents) ||
-    (guest.state === "hasValue" && guest.contents)
-  ) {
+  } else if (user.state === "hasValue" && user.contents) {
     content = (
       <nav className="items-center space-x-6 md:flex hidden">
         <Button
@@ -26,9 +20,7 @@ const Header = () => {
           variant="outline"
           onClick={() => {
             localStorage.removeItem("auth_token");
-            localStorage.removeItem("guest_auth_token");
             refreshUser();
-            refreshGuest();
             navigate("/auth/signin");
           }}
         >

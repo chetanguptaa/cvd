@@ -1,4 +1,3 @@
-import GuestForm from "@/components/auth/guest-form";
 import SignupForm from "@/components/auth/signup-form";
 import { Icons } from "@/components/header/icons";
 import AuthWrapper from "@/wrappers/auth";
@@ -43,7 +42,6 @@ const SignupPage = () => {
               </button>
             </div>
           </div>
-          <GuestForm />
         </div>
       </div>
     </AuthWrapper>

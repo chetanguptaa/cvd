@@ -33,11 +33,12 @@ const SignupForm = () => {
       );
       if (res.data) {
         localStorage.setItem("auth_token", res.data.token);
+        localStorage.removeItem("guest_auth_token");
         toast({
           title: "Signed up successfully",
         });
         refreshUser();
-        navigate("/");
+        navigate("/race");
       }
     } catch (e: unknown) {
       if (e instanceof AxiosError) {

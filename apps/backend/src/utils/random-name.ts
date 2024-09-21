@@ -175,10 +175,8 @@ const nameList = [
   "Paradox",
 ];
 
-const randomName = (baseName: string): string => {
+const randomName = (): string => {
   return (
-    baseName +
-    " " +
     nameList[Math.floor(Math.random() * nameList.length)] +
     " " +
     nameList[Math.floor(Math.random() * nameList.length)]

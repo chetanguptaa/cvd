@@ -2,7 +2,7 @@ import { config } from "dotenv";
 config();
 import { Request, Response, Router } from "express";
 import bcrypt from "bcryptjs";
-import { SigninSchema, SignupSchema, CreateGuestSchema } from "@vr/common";
+import { SigninSchema, SignupSchema } from "@vr/common";
 import prisma from "@vr/db";
 import jwt from "jsonwebtoken";
 import randomName from "../utils/random-name";
@@ -87,15 +87,9 @@ authRouter.post("/signin", async (req: Request, res: Response) => {
   }
 });
 
-authRouter.post("/guest/signup", async (req: Request, res: Response) => {
+authRouter.get("/guest/signup", async (req: Request, res: Response) => {
   try {
-    const parsed = CreateGuestSchema.safeParse(req.body);
-    if (parsed.error) {
-      return res.status(400).json({
-        error: "Some error occured, please try again later",
-      });
-    }
-    const name = randomName(parsed.data.name);
+    const name = randomName();
     const guest = await prisma.guest.create({
       data: {
         username: name,

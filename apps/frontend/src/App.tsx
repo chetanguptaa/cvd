@@ -4,29 +4,23 @@ import SignupPage from "./pages/auth/signup";
 import { Suspense } from "react";
 import LandingPage from "./pages/landing/landing";
 import MainLoader from "./components/ui/loader";
-import { useRecoilValueLoadable } from "recoil";
-import userAtom from "./store/atoms/userAtom";
-import Dashboard from "./pages/app/dashboard";
-import guestAtom from "./store/atoms/guestAtom";
+import RacePage from "./pages/app/race";
+import Header from "./components/header";
 
 function App() {
-  const user = useRecoilValueLoadable(userAtom);
-  const guest = useRecoilValueLoadable(guestAtom);
-
   return (
     <Suspense fallback={<MainLoader />}>
       <Routes>
         <Route path="/auth/signin" element={<SigninPage />} />
         <Route path="/auth/signup" element={<SignupPage />} />
-        <Route
-          path="/"
-          element={
-            user.valueMaybe() || guest.valueMaybe() ?
-              <Dashboard />
-            : <LandingPage />
-          }
-        />
       </Routes>
+      <div className="container py-2 h-fit md:py-18 grow">
+        <Header />
+        <Routes>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/race" element={<RacePage />} />
+        </Routes>
+      </div>
     </Suspense>
   );
 }
