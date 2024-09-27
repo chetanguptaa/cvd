@@ -47,10 +47,16 @@ export class PubSubManager {
   public async unsubscribe(user: User, gameId: string) {
     const subscribers = this.subscriptions.get(gameId);
     if (subscribers) {
+      const userInSubscribers = subscribers.find((s) => s.id === user.id);
+      if (!userInSubscribers) return;
       this.subscriptions.set(
         gameId,
         subscribers.filter((sub) => sub.id !== user.id)
       );
+      for (let i = 0; i < subscribers.length; i++) {
+        if (subscribers[i].id === user.id) continue;
+        subscribers[i].socket.send(`${user.name} left the game`);
+      }
       if (this.subscriptions.get(gameId)?.length === 0) {
         try {
           await this.redisClient.unsubscribe(`${gameId}`);

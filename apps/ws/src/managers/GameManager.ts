@@ -2,7 +2,7 @@ import { WebSocket } from "ws";
 import { Game } from "../classes/Game";
 import { User } from "../classes/User";
 import { pubSubManager } from "./PubSubManager";
-import { JOIN_GAME } from "../types";
+import { JOIN_GAME, LEAVE_GAME } from "../types";
 
 class GameManager {
   private games: Game[];
@@ -22,10 +22,10 @@ class GameManager {
     this.users.push(user);
     this.addHandler(user);
   }
-  removeUser(ws: WebSocket) {
-    const user = this.users.find((user) => user.socket === ws);
+  removeUser(u: User) {
+    const user = this.users.find((user) => user.socket === u.socket);
     if (!user) return;
-    this.users = this.users.filter((user) => user.socket !== ws);
+    this.users = this.users.filter((user) => user.socket !== u.socket);
   }
   private async addHandler(user: User) {
     user.socket.on("message", async (data) => {
@@ -34,12 +34,23 @@ class GameManager {
         const gameId = message.payload.gameId as string;
         let game = this.games.find((g) => g.gameId === gameId);
         if (!game) {
-          game = new Game(user, gameId);
+          game = new Game(gameId, user);
           this.games.push(game);
         } else {
-          game.addUser(user);
+          await game.addUser(user);
         }
         await pubSubManager.subscribe(user, gameId);
+      }
+      if (message.type === LEAVE_GAME) {
+        const gameId = message.payload.gameId as string;
+        let game = this.games.find((g) => g.gameId === gameId);
+        if (!game) {
+          user.socket.send("Game does not exist");
+          return;
+        } else {
+          await game.removeUser(user);
+        }
+        await pubSubManager.unsubscribe(user, gameId);
       }
     });
   }

@@ -12,6 +12,6 @@ wss.on("connection", async function connection(ws, req: Request) {
     gameManager.addUser(user);
   }
   ws.on("close", () => {
-    gameManager.removeUser(ws);
+    if (user) gameManager.removeUser(user);
   });
 });
