@@ -6,6 +6,7 @@ import LandingPage from "./pages/landing/landing";
 import MainLoader from "./components/ui/loader";
 import RacePage from "./pages/app/race/race";
 import Header from "./components/header";
+import RacePractice from "./pages/app/race/practice/practice";
 
 function App() {
   return (
@@ -14,11 +15,12 @@ function App() {
         <Route path="/auth/signin" element={<SigninPage />} />
         <Route path="/auth/signup" element={<SignupPage />} />
       </Routes>
-      <div className="container py-2 h-fit md:py-18 grow">
+      <div className="container h-fit">
         <Header />
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/race" element={<RacePage />} />
+          <Route path="/race/practice" element={<RacePractice />} />
         </Routes>
       </div>
     </Suspense>

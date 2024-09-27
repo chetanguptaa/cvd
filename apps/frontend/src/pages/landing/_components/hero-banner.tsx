@@ -60,9 +60,10 @@ export default function HeroBanner() {
         </p>
         <div className="my-10  max-md:flex max-md:items-center max-md:justify-center">
           <Button
+            variant="outline"
             onClick={handleClick}
             title="Start Racing"
-            className="flex items-center gap-2 px-4 py-2 font-medium tracking-wider text-white transition-colors rounded-md w-fit bg-warning md:text-2xl ring-offset-background bg-primary"
+            className="flex items-center gap-2 px-4 py-2 font-medium tracking-wider text-green-800 hover:text-green-900 rounded-md w-fit  md:text-2xl border-none"
             data-cy="start-racing-button"
           >
             Start Racing <ArrowRight />

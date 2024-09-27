@@ -1,18 +1,16 @@
 import { WebSocket } from "ws";
-import { userManager } from "./UserManager";
-import { GAME_ADDED, GAME_ALERT, INIT_GAME } from "../types";
 import { Game } from "../classes/Game";
 import { User } from "../classes/User";
+import { pubSubManager } from "./PubSubManager";
+import { JOIN_GAME } from "../types";
 
 class GameManager {
   private games: Game[];
   private users: User[];
-  private pendingGameId: string | null;
   private static instance: GameManager;
   private constructor() {
     this.games = [];
     this.users = [];
-    this.pendingGameId = null;
   }
   public static getInstance() {
     if (!this.instance) {
@@ -26,58 +24,27 @@ class GameManager {
   }
   removeUser(ws: WebSocket) {
     const user = this.users.find((user) => user.socket === ws);
-    if (!user) {
-      console.error("User not found!!");
-      return;
-    }
+    if (!user) return;
     this.users = this.users.filter((user) => user.socket !== ws);
-    userManager.removeUser(user);
   }
-  private addHandler(user: User) {
+  private async addHandler(user: User) {
     user.socket.on("message", async (data) => {
       const message = JSON.parse(data.toString());
-      if (message.type === INIT_GAME) {
-        if (this.pendingGameId) {
-          const game = this.games.find((x) => x.gameId === this.pendingGameId);
-          if (!game) {
-            console.error("Pending game not found");
-            return;
-          }
-          if (
-            user === game.player1User ||
-            user === game.player2User ||
-            user === game.player3User ||
-            user === game.player4User
-          ) {
-            user.socket.send(
-              JSON.stringify({
-                type: GAME_ALERT,
-                payload: {
-                  message: "Trying to Connect with yourself?",
-                },
-              })
-            );
-            return;
-          }
-          userManager.addUser(user, game.gameId);
-          await game.updatePlayer(user);
-          this.pendingGameId = null;
-        } else {
-          const game = new Game(user, null, null, null);
+      if (message.type === JOIN_GAME) {
+        const gameId = message.payload.gameId as string;
+        let game = this.games.find((g) => g.gameId === gameId);
+        if (!game) {
+          game = new Game(user, gameId);
           this.games.push(game);
-          this.pendingGameId = game.gameId;
-          userManager.addUser(user, game.gameId);
-          userManager.broadcast(
-            game.gameId,
-            JSON.stringify({
-              type: GAME_ADDED,
-              gameId: game.gameId,
-            })
-          );
+        } else {
+          game.addUser(user);
         }
+        await pubSubManager.subscribe(user, gameId);
       }
     });
   }
 }
 
 export const gameManager = GameManager.getInstance();
+
+// here if the user clicks on `Start Racing on the UI we'll add him to any pending game else if the users click on create game or join room they go to that game only

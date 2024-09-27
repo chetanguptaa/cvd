@@ -1,66 +1,96 @@
-import { useRef, useEffect } from "react";
-import * as monaco from "monaco-editor";
-import editorWorker from "monaco-editor/esm/vs/editor/editor.worker?worker";
-import jsonWorker from "monaco-editor/esm/vs/language/json/json.worker?worker";
-import cssWorker from "monaco-editor/esm/vs/language/css/css.worker?worker";
-import htmlWorker from "monaco-editor/esm/vs/language/html/html.worker?worker";
-import tsWorker from "monaco-editor/esm/vs/language/typescript/ts.worker?worker";
+import { useEffect, useState } from "react";
+import { EditorView, basicSetup } from "codemirror";
+import { vim } from "@replit/codemirror-vim";
+import { EditorState } from "@codemirror/state";
+import { vscodeDark } from "@uiw/codemirror-theme-vscode";
+import CodeMirror from "@uiw/react-codemirror";
+import { motion } from "framer-motion";
+import { langs } from "@uiw/codemirror-extensions-langs";
+import { formatNumber, formatNumberExampleCode } from "@/lib/code-editor";
+import RaceTrack from "../user-profile-avatar/user-profile-avatar";
 
-// @ts-expect-error // TODO to add a type
-import * as MonacoVim from "monaco-vim";
+export default function CodeEditor() {
+  const goCode = `/* 
+package main
+import "fmt"
+func main() {
+  fmt.Println("Hello, world!")
+} 
+*/
+`;
 
-self.MonacoEnvironment = {
-  getWorker(_, label) {
-    if (label === "json") {
-      return new jsonWorker();
-    }
-    if (label === "css" || label === "scss" || label === "less") {
-      return new cssWorker();
-    }
-    if (label === "html" || label === "handlebars" || label === "razor") {
-      return new htmlWorker();
-    }
-    if (label === "typescript" || label === "javascript") {
-      return new tsWorker();
-    }
-    return new editorWorker();
-  },
-};
-
-export default function Component() {
-  const editorRef = useRef(null);
-  const vimStatusBarRef = useRef(null);
+  const [code, setCode] = useState("");
+  const [userCode, setUserCode] = useState("");
 
   useEffect(() => {
-    if (editorRef.current) {
-      const editor = monaco.editor.create(editorRef.current, {
-        value:
-          "// Your code here\n\nfunction greet(name) {\n  return `Hello, ${name}!`;\n}\n\nconsole.log(greet('Alice'));\n",
-        language: "javascript",
-        theme: "vs-dark",
-        automaticLayout: true,
-      });
-
-      const vimMode = MonacoVim.initVimMode(editor, vimStatusBarRef.current);
-
-      return () => {
-        editor.dispose();
-        vimMode.dispose();
-      };
-    }
-  }, []);
+    setCode(goCode);
+  }, [goCode]);
 
   return (
-    <div className="w-full max-w-3xl mx-auto p-4">
-      <h2 className="text-2xl font-bold mb-4">Monaco Editor with Vim Mode</h2>
-      <div
-        ref={editorRef}
-        className="border border-gray-300 w-full rounded-md shadow-sm"
-        style={{ height: "400px" }}
-        aria-label="Code editor with Vim mode enabled"
-        data-gramm="false"
-      />
-      <div ref={vimStatusBarRef} className="vim-status-bar" />
+    <div className="flex flex-col justify-center items-center">
+      <motion.div
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ duration: 0.3 }}
+        className="w-[1024px] h-[600px] bg-[#1E1E1E] rounded-[16px] shadow-2xl overflow-hidden relative mt-8"
+      >
+        <div className="h-8 bg-black flex items-center px-4 rounded-t-lg">
+          <div className="flex space-x-2">
+            <div className="w-3 h-3 rounded-full bg-red-500"></div>
+            <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
+            <div className="w-3 h-3 rounded-full bg-green-500"></div>
+          </div>
+        </div>
+        <div className="relative h-[calc(100%-96px)] flex flex-col justify-between">
+          <CodeMirror
+            value={userCode}
+            height="100%"
+            theme={vscodeDark}
+            extensions={[
+              vscodeDark,
+              basicSetup,
+              langs.go(),
+              vim(),
+              EditorState.tabSize.of(4),
+              EditorView.lineWrapping,
+              EditorView.domEventHandlers({
+                paste: (event) => {
+                  event.preventDefault();
+                  return true;
+                },
+              }),
+              formatNumber(),
+            ]}
+            onChange={(value) => setUserCode(value)}
+            className="text-lg bg-black max-h-96 overflow-y-auto scrollbar-thin scrollbar-thumb-scrollbar-thumb scrollbar-track-scrollbar-track"
+          />
+          <CodeMirror
+            value={code}
+            height="100%"
+            theme={vscodeDark}
+            extensions={[
+              vscodeDark,
+              langs.go(),
+              EditorView.lineWrapping,
+              EditorState.readOnly.of(true),
+              EditorView.domEventHandlers({
+                copy: (event) => {
+                  event.preventDefault();
+                  return true;
+                },
+                paste: (event) => {
+                  event.preventDefault();
+                  return true;
+                },
+              }),
+              formatNumberExampleCode(),
+            ]}
+            className="text-lg"
+          />
+        </div>
+      </motion.div>
+      <RaceTrack />
+      {/* <img src="/race_finish_flag.png" alt="race finish flag" /> */}
     </div>
   );
 }

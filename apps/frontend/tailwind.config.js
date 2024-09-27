@@ -69,6 +69,8 @@ export default {
           fade: "fade 1s ease-in-out",
           gradient: "gradient 0.75s linear infinite",
         },
+        "scrollbar-thumb": "#ffffff",
+        "scrollbar-track": "#f0f0f0",
       },
       keyframes: {
         "accordion-down": {
@@ -142,5 +144,5 @@ export default {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [require("tailwindcss-animate"), require("tailwind-scrollbar")],
 };

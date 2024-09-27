@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-export const BASE_URL = "ws://localhost:8080";
+import { WEBSOCKET_URL } from "@/constants";
 
 export class SignalingManager {
   private ws: WebSocket;
@@ -9,7 +8,7 @@ export class SignalingManager {
   private initialized: boolean = false;
 
   private constructor() {
-    this.ws = new WebSocket(BASE_URL);
+    this.ws = new WebSocket(WEBSOCKET_URL);
     this.bufferedMessages = [];
     this.init();
   }

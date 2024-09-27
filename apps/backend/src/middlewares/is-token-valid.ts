@@ -17,11 +17,14 @@ const isTokenValid = async (
       });
     }
     const token = auth_header.split("Bearer ")[1];
-    const user_data = jwt.verify(token, JWT_SECRET) as IUser;
-    if (!user_data.email) {
-      throw new Error();
+    const user_data = jwt.verify(token, JWT_SECRET) as Omit<IUser, "email"> & {
+      email: string;
+    };
+    if (user_data.email) {
+      req.user = user_data;
+    } else {
+      req.guest = user_data;
     }
-    req.user = user_data;
     next();
   } catch (err: any) {
     return res.status(404).json({

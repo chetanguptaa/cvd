@@ -1,4 +1,6 @@
+import MultiplayerRaceCard from "@/components/app/race/card/multiplayer-race-card";
 import PracticeRaceCard from "@/components/app/race/card/practice-race-card";
+import RoomRaceCard from "@/components/app/race/card/room-race-card";
 import MainLoader from "@/components/ui/loader";
 import guestAtom from "@/store/atoms/guestAtom";
 import userAtom from "@/store/atoms/userAtom";
@@ -28,8 +30,10 @@ export default function RacePage() {
           devs online
         </p>
       </div>
-      <div className="grid grid-cols-1 gap-8 my-10 lg:grid-cols-3">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 my-10 w-fit mx-auto">
         <PracticeRaceCard />
+        <MultiplayerRaceCard />
+        <RoomRaceCard />
       </div>
     </main>
   );
