@@ -1,15 +1,29 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Users } from "lucide-react";
-import React, { SetStateAction, useState } from "react";
+import { FormEvent, SetStateAction, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader } from "../../../ui/card";
 import { cn } from "@/lib/utils";
 import LanguageDropdown from "./_components/language-dropdown";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { Input } from "@/components/ui/input";
+import { toast } from "@/hooks/use-toast";
 
 export default function RoomRaceCard() {
   const [selectedPracticeLanguage, setSelectedPracticeLanguage] =
     useState("go");
   const [error, setError] = useState("");
+  const [isJoinDialogOpen, setIsJoinDialogOpen] = useState(false);
+  const [roomId, setRoomId] = useState("");
   const navigate = useNavigate();
 
   function handleSetCodeLanguage(props: SetStateAction<string>) {
@@ -17,7 +31,7 @@ export default function RoomRaceCard() {
     setError("");
   }
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError("");
     if (!selectedPracticeLanguage)
@@ -25,6 +39,18 @@ export default function RoomRaceCard() {
     navigate(
       `/race/practice?lang=${encodeURIComponent(selectedPracticeLanguage)}`
     );
+  }
+
+  function handleJoinRoom() {
+    if (roomId.trim() === "") {
+      toast({
+        title: "Please enter a valid room id",
+        variant: "destructive",
+      });
+      return;
+    }
+    console.log(`Joining room: ${roomId}`);
+    setIsJoinDialogOpen(false);
   }
 
   return (
@@ -58,7 +84,7 @@ export default function RoomRaceCard() {
           </div>
           <div className="flex justify-center items-center w-full space-x-2">
             <Button
-              variant={"ghost"}
+              variant="ghost"
               className="relative justify-start border w-full"
               data-cy="practice-button"
             >
@@ -69,9 +95,11 @@ export default function RoomRaceCard() {
               />
             </Button>
             <Button
-              variant={"ghost"}
+              type="button"
+              variant="ghost"
               className="relative justify-start border w-full"
-              data-cy="practice-button"
+              data-cy="join-room-button"
+              onClick={() => setIsJoinDialogOpen(true)}
             >
               Join Room{" "}
               <ArrowRight
@@ -82,6 +110,31 @@ export default function RoomRaceCard() {
           </div>
         </form>
       </CardContent>
+      <AlertDialog open={isJoinDialogOpen} onOpenChange={setIsJoinDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Join a Room</AlertDialogTitle>
+            <AlertDialogDescription>
+              Enter the room ID to join an existing race.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <Input
+            type="text"
+            placeholder="Enter Room ID"
+            value={roomId}
+            onChange={(e) => setRoomId(e.target.value)}
+          />
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleJoinRoom}
+              disabled={roomId.length === 0}
+            >
+              Join
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Card>
   );
 }

@@ -14,13 +14,36 @@ function App() {
       <Routes>
         <Route path="/auth/signin" element={<SigninPage />} />
         <Route path="/auth/signup" element={<SignupPage />} />
+        <Route
+          path="/race/practice"
+          element={
+            <>
+              <Header />
+              <RacePractice />
+            </>
+          }
+        />
       </Routes>
       <div className="container h-fit">
-        <Header />
         <Routes>
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/race" element={<RacePage />} />
-          <Route path="/race/practice" element={<RacePractice />} />
+          <Route
+            path="/"
+            element={
+              <>
+                <Header />
+                <LandingPage />
+              </>
+            }
+          />
+          <Route
+            path="/race"
+            element={
+              <>
+                <Header />
+                <RacePage />
+              </>
+            }
+          />
         </Routes>
       </div>
     </Suspense>

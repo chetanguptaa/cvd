@@ -18,14 +18,6 @@ export function formatNumber() {
   });
 }
 
-export function formatNumberExampleCode() {
-  return lineNumbers({
-    formatNumber: () => {
-      return " ";
-    },
-  });
-}
-
 export function goCodeToString(code: string): string {
   const escaped = code
     .replace(/\n/g, "\\n")

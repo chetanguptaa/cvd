@@ -4,6 +4,7 @@ import userAtom from "@/store/atoms/userAtom";
 import { ChevronRight } from "lucide-react";
 import { Button } from "./ui/button";
 import MainLoader from "./ui/loader";
+import { ModeToggle } from "./ui/mode-toggle";
 
 const Header = () => {
   const user = useRecoilValueLoadable(userAtom);
@@ -58,7 +59,10 @@ const Header = () => {
         <Link className="font-bold" to="/">
           <img src="/logo.jpg" className="w-12 h-12 rounded-full" />
         </Link>
-        {content}
+        <div className="flex justify-center items-center space-x-4">
+          {content}
+          <ModeToggle />
+        </div>
       </div>
     </header>
   );

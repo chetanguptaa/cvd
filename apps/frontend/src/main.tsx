@@ -5,14 +5,17 @@ import "./index.css";
 import { BrowserRouter } from "react-router-dom";
 import { Toaster } from "@/components/ui/toaster";
 import { RecoilRoot } from "recoil";
+import { ThemeProvider } from "./components/providers/theme-provider.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <BrowserRouter>
-      <RecoilRoot>
-        <App />
-        <Toaster />
-      </RecoilRoot>
-    </BrowserRouter>
+    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+      <BrowserRouter>
+        <RecoilRoot>
+          <App />
+          <Toaster />
+        </RecoilRoot>
+      </BrowserRouter>
+    </ThemeProvider>
   </StrictMode>
 );
