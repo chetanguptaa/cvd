@@ -1,8 +1,13 @@
-import { WebSocket } from "ws";
 import { Game } from "../classes/Game";
 import { User } from "../classes/User";
 import { pubSubManager } from "./PubSubManager";
-import { JOIN_GAME, LEAVE_GAME } from "../types";
+import {
+  JOIN_GAME,
+  LEAVE_GAME,
+  TUserGameDetails,
+  USER_GAME_DETAILS,
+} from "../types";
+import prisma from "@vr/db";
 
 class GameManager {
   private games: Game[];
@@ -29,28 +34,55 @@ class GameManager {
   }
   private async addHandler(user: User) {
     user.socket.on("message", async (data) => {
-      const message = JSON.parse(data.toString());
-      if (message.type === JOIN_GAME) {
-        const gameId = message.payload.gameId as string;
-        let game = this.games.find((g) => g.gameId === gameId);
-        if (!game) {
-          game = new Game(gameId, user);
-          this.games.push(game);
-        } else {
-          await game.addUser(user);
+      try {
+        const message = JSON.parse(data.toString());
+        if (message.type === JOIN_GAME) {
+          const gameId = message.payload.gameId as string;
+          let game = this.games.find((g) => g.gameId === gameId);
+          const gameInDB = await prisma.game.findFirst({
+            where: {
+              id: gameId,
+            },
+          });
+          if (!gameInDB) {
+            user.socket.send("Game does not exist");
+            return;
+          }
+          if (!game) {
+            game = new Game(gameId, user);
+            this.games.push(game);
+          } else {
+            await game.addUser(user);
+          }
+          await pubSubManager.subscribe(user, gameId);
         }
-        await pubSubManager.subscribe(user, gameId);
-      }
-      if (message.type === LEAVE_GAME) {
-        const gameId = message.payload.gameId as string;
-        let game = this.games.find((g) => g.gameId === gameId);
-        if (!game) {
-          user.socket.send("Game does not exist");
-          return;
-        } else {
-          await game.removeUser(user);
+        if (message.type === LEAVE_GAME) {
+          const gameId = message.payload.gameId as string;
+          let game = this.games.find((g) => g.gameId === gameId);
+          if (!game) {
+            user.socket.send("Game does not exist");
+            return;
+          } else {
+            await game.removeUser(user);
+          }
+          await pubSubManager.unsubscribe(user, gameId);
         }
-        await pubSubManager.unsubscribe(user, gameId);
+        if (message.type === USER_GAME_DETAILS) {
+          const gameId = message.payload.gameId as string;
+          let game = this.games.find((g) => g.gameId === gameId);
+          if (!game) {
+            user.socket.send("Game does not exist");
+            return;
+          } else {
+            await game.handleUserGameDetails(
+              user,
+              message.payload.details as TUserGameDetails
+            );
+          }
+        }
+      } catch (error) {
+        user.socket.send("some error occured, please try again later");
+        return;
       }
     });
   }

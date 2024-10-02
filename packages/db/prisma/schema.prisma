@@ -45,6 +45,7 @@ model Game {
   createdByUserId  String?    @db.Text
   createdByGuest   Guest?     @relation("GameCreatorGuest", fields: [createdByGuestId], references: [id])
   createdByGuestId String?    @db.Text
+  code             String
 }
 
 model UserGame {

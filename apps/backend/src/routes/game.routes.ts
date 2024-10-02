@@ -14,6 +14,7 @@ gameRouter.post("", async (req: Request, res: Response) => {
         const game = await tx.game.create({
           data: {
             createdByGuestId: guest.id,
+            code: '/* package main \nimport "fmt"\nfunc main() {\n\tfmt.Println("world!")\n*',
           },
         });
         const guestId = guest.id;
@@ -28,6 +29,7 @@ gameRouter.post("", async (req: Request, res: Response) => {
         const game = await tx.game.create({
           data: {
             createdByUserId: user.id,
+            code: '/* package main \nimport "fmt"\nfunc main() {\n\tfmt.Println("world!")\n*',
           },
         });
         const userId = user.id;
@@ -45,6 +47,7 @@ gameRouter.post("", async (req: Request, res: Response) => {
       gameId,
     });
   } catch (error) {
+    console.log(error);
     return res.status(500).json({
       error: "some error occoured, please try again later",
     });
