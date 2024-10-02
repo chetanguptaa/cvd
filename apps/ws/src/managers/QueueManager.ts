@@ -16,8 +16,8 @@ export class QueueManager {
     return QueueManager.instance;
   }
 
-  public async publishMessage(user: User, gameId: string, type: string) {
-    await this.redisClient.lPush(
+  public publishMessage(user: User, gameId: string, type: string) {
+    this.redisClient.lPush(
       "database",
       JSON.stringify({
         userId: user.id,

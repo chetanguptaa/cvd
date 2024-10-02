@@ -28,8 +28,6 @@ class GameManager {
     this.addHandler(user);
   }
   removeUser(u: User) {
-    const user = this.users.find((user) => user.socket === u.socket);
-    if (!user) return;
     this.users = this.users.filter((user) => user.socket !== u.socket);
   }
   private async addHandler(user: User) {
@@ -52,7 +50,7 @@ class GameManager {
             game = new Game(gameId, user);
             this.games.push(game);
           } else {
-            await game.addUser(user);
+            game.addUser(user);
           }
           await pubSubManager.subscribe(user, gameId);
         }
@@ -63,7 +61,7 @@ class GameManager {
             user.socket.send("Game does not exist");
             return;
           } else {
-            await game.removeUser(user);
+            game.removeUser(user);
           }
           await pubSubManager.unsubscribe(user, gameId);
         }

@@ -10,8 +10,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "redis": "^4.7.0",
     "@vr/common": "workspace:*",
-    "@vr/db": "workspace:*"
+    "@vr/db": "workspace:*",
+    "dotenv": "^16.4.5",
+    "redis": "^4.7.0"
   }
 }

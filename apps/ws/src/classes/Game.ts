@@ -10,12 +10,13 @@ export class Game {
   constructor(gameId: string, player: User) {
     this.players = [];
     this.players.push(player);
+    queueManager.publishMessage(player, gameId, "JOIN_GAME");
     player.socket.send("You have successfully, joined the game");
     this.gameId = gameId;
   }
-  public async addUser(user: User): Promise<void> {
+  public addUser(user: User): void {
     try {
-      const isPlayerPartOfTheGame = await this.isPlayerPartOfTheGame(user);
+      const isPlayerPartOfTheGame = this.isPlayerPartOfTheGame(user);
       if (isPlayerPartOfTheGame) {
         user.socket.send("You are already part of the game");
         return;
@@ -24,8 +25,8 @@ export class Game {
         user.socket.send("Sorry, game is already full");
         return;
       }
-      queueManager.publishMessage(user, this.gameId, "JOIN_GAME");
       this.players.push(user);
+      queueManager.publishMessage(user, this.gameId, "JOIN_GAME");
       user.socket.send("You have successfully, joined the game");
       return;
     } catch (error) {
@@ -34,9 +35,9 @@ export class Game {
     }
   }
 
-  public async removeUser(user: User): Promise<void> {
+  public removeUser(user: User): void {
     try {
-      const isPlayerPartOfTheGame = await this.isPlayerPartOfTheGame(user);
+      const isPlayerPartOfTheGame = this.isPlayerPartOfTheGame(user);
       if (!isPlayerPartOfTheGame) {
         user.socket.send(`You are not part of the game.`);
         return;
@@ -58,7 +59,7 @@ export class Game {
     userGameDetails: TUserGameDetails
   ) {
     try {
-      const isPlayerPartOfTheGame = await this.isPlayerPartOfTheGame(user);
+      const isPlayerPartOfTheGame = this.isPlayerPartOfTheGame(user);
       if (!isPlayerPartOfTheGame) {
         user.socket.send(`You are not part of the game.`);
         return;
@@ -70,10 +71,7 @@ export class Game {
     }
   }
 
-  private async isPlayerPartOfTheGame(user: User) {
-    console.log(this.players);
-    console.log(user);
-
+  private isPlayerPartOfTheGame(user: User) {
     const userInGame = this.players.find((p) => p.id === user.id);
     if (userInGame) return true;
     return false;
