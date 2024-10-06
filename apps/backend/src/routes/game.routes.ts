@@ -5,6 +5,8 @@ const gameRouter: Router = Router();
 
 gameRouter.post("", async (req: Request, res: Response) => {
   try {
+    console.log("you are you listening ");
+
     let isGuest = false;
     const guest = req.guest;
     const user = req.user;

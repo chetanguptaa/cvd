@@ -1,4 +1,5 @@
 import { IUser } from "@vr/common";
+import prisma from "@vr/db";
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 
@@ -21,9 +22,27 @@ const isTokenValid = async (
       email: string;
     };
     if (user_data.email) {
-      req.user = user_data;
+      const user = await prisma.user.findFirst({
+        where: {
+          id: user_data.id,
+        },
+      });
+      if (!user) return;
+      req.user = {
+        ...user_data,
+        name: user.name,
+      };
     } else {
-      req.guest = user_data;
+      const guest = await prisma.guest.findFirst({
+        where: {
+          id: user_data.id,
+        },
+      });
+      if (!guest) return;
+      req.guest = {
+        ...user_data,
+        name: guest.username,
+      };
     }
     next();
   } catch (err: any) {

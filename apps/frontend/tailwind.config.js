@@ -77,6 +77,10 @@ export default {
           from: { height: 0 },
           to: { height: "var(--radix-accordion-content-height)" },
         },
+        shine: {
+          from: { backgroundPosition: "200% 0" },
+          to: { backgroundPosition: "-200% 0" },
+        },
         "accordion-up": {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: 0 },
@@ -141,6 +145,7 @@ export default {
         blink: "blink 1.5s ease infinite",
         fade: "fade 1s ease-in-out",
         gradient: "gradient 0.75s linear infinite",
+        shine: "shine 8s ease-in-out infinite",
       },
     },
   },

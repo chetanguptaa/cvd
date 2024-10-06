@@ -1,4 +1,6 @@
-import { WEBSOCKET_URL } from "@/constants";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+export const BASE_WEBSOCKET_URL = "ws://localhost:8080";
 
 export class SignalingManager {
   private ws: WebSocket;
@@ -8,7 +10,7 @@ export class SignalingManager {
   private initialized: boolean = false;
 
   private constructor() {
-    this.ws = new WebSocket(WEBSOCKET_URL);
+    this.ws = new WebSocket(BASE_WEBSOCKET_URL);
     this.bufferedMessages = [];
     this.init();
   }
@@ -30,9 +32,23 @@ export class SignalingManager {
     };
     this.ws.onmessage = (event) => {
       const message = JSON.parse(event.data);
-      const type = message.data.e;
+      const type = message.data.t;
       if (this.callbacks[type]) {
-        this.callbacks[type].forEach(() => {});
+        this.callbacks[type].forEach(({ callback }: any) => {
+          if (type === "JOIN_GAME") {
+            if (message.e) return; // returning for now we'll handle it later
+            const user: Partial<{
+              name: string;
+              id: string;
+              isGuest: boolean;
+            }> = {
+              id: message.u.i,
+              name: message.u.n,
+              isGuest: message.u.ig,
+            };
+            callback(user);
+          }
+        });
       }
     };
   }

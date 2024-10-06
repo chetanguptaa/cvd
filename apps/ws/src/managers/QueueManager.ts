@@ -1,11 +1,17 @@
+import { config } from "dotenv";
+config();
 import { createClient, RedisClientType } from "redis";
 import { User } from "../classes/User";
+
+const REDIS_URL = process.env.REDIS_URL!;
 
 export class QueueManager {
   private static instance: QueueManager;
   private redisClient: RedisClientType;
   private constructor() {
-    this.redisClient = createClient();
+    this.redisClient = createClient({
+      url: REDIS_URL,
+    });
     this.redisClient.connect();
   }
 

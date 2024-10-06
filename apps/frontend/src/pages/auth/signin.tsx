@@ -1,6 +1,6 @@
 import LoginForm from "@/components/auth/login-form";
 import { Icons } from "@/components/header/icons";
-import AuthWrapper from "@/wrappers/auth";
+import AuthWrapper from "@/wrappers/AuthWrapper";
 import { Link } from "react-router-dom";
 
 const SigninPage = () => {

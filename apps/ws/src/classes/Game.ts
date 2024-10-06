@@ -11,26 +11,70 @@ export class Game {
     this.players = [];
     this.players.push(player);
     queueManager.publishMessage(player, gameId, "JOIN_GAME");
-    player.socket.send("You have successfully, joined the game");
+    player.socket.send(
+      JSON.stringify({
+        t: "JOIN_GAME",
+        m: "You have successfully, joined the game",
+      })
+    );
     this.gameId = gameId;
   }
   public addUser(user: User): void {
     try {
       const isPlayerPartOfTheGame = this.isPlayerPartOfTheGame(user);
       if (isPlayerPartOfTheGame) {
-        user.socket.send("You are already part of the game");
+        user.socket.send(
+          JSON.stringify({
+            t: "JOIN_GAME",
+            m: "You are already part of the game",
+          })
+        );
         return;
       }
       if (this.players.length === 8) {
-        user.socket.send("Sorry, game is already full");
+        user.socket.send(
+          JSON.stringify({
+            t: "JOIN_GAME",
+            e: "Sorry, game is already full",
+          })
+        );
         return;
       }
       this.players.push(user);
       queueManager.publishMessage(user, this.gameId, "JOIN_GAME");
-      user.socket.send("You have successfully, joined the game");
+      for (let i = 0; i < this.players.length; i++) {
+        if (this.players[i].id === user.id) continue;
+        this.players[i].socket.send(
+          JSON.stringify({
+            t: "JOIN_GAME",
+            u: {
+              i: user.id,
+              ig: user.isGuest,
+              n: user.name,
+            },
+            m: user.name + " have successfully, joined the game",
+          })
+        );
+      }
+      user.socket.send(
+        JSON.stringify({
+          t: "JOIN_GAME",
+          u: {
+            i: user.id,
+            ig: user.isGuest,
+            n: user.name,
+          },
+          m: "You have successfully, joined the game",
+        })
+      );
       return;
     } catch (error) {
-      user.socket.send("Some error occured, please try again later");
+      user.socket.send(
+        JSON.stringify({
+          t: "ERROR",
+          e: "Some error occured, please try again later",
+        })
+      );
       return;
     }
   }
@@ -39,16 +83,43 @@ export class Game {
     try {
       const isPlayerPartOfTheGame = this.isPlayerPartOfTheGame(user);
       if (!isPlayerPartOfTheGame) {
-        user.socket.send(`You are not part of the game.`);
+        user.socket.send(
+          JSON.stringify({
+            t: "LEAVE_GAME",
+            m: `You are not part of the game.`,
+          })
+        );
         return;
       }
       this.players = this.players.filter((p) => p.id !== user.id);
       queueManager.publishMessage(user, this.gameId, "LEAVE_GAME");
-      user.socket.send(`You left the game.`);
+      for (let i = 0; i < this.players.length; i++) {
+        if (this.players[i].id === user.id) continue;
+        this.players[i].socket.send(
+          JSON.stringify({
+            t: "LEAVE_GAME",
+            u: {
+              i: user.id,
+              ig: user.isGuest,
+              n: user.name,
+            },
+            m: user.name + " have left the game",
+          })
+        );
+      }
+      user.socket.send(
+        JSON.stringify({
+          t: "LEAVE_GAME",
+          m: `You left the game.`,
+        })
+      );
       return;
     } catch (error) {
       user.socket.send(
-        `An error occurred while removing the user from the game.`
+        JSON.stringify({
+          t: "ERROR",
+          e: `An error occurred while removing the user from the game.`,
+        })
       );
       return;
     }

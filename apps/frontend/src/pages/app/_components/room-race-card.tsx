@@ -1,10 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Users } from "lucide-react";
-import { FormEvent, SetStateAction, useState } from "react";
+import { FormEvent, SetStateAction, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Card, CardContent, CardHeader } from "../../../ui/card";
 import { cn } from "@/lib/utils";
-import LanguageDropdown from "./_components/language-dropdown";
+import LanguageDropdown from "./language-dropdown";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -16,14 +15,29 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
-import { toast } from "@/hooks/use-toast";
+import { useToast } from "@/hooks/use-toast";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import axios from "axios";
+import { BACKEND_URL } from "@/constants";
+import { useSocket } from "@/hooks/use-socket";
 
-export default function RoomRaceCard() {
+export default function RoomRaceCard(user: {
+  id: string;
+  name: string;
+  isGuest: boolean;
+}) {
   const [selectedPracticeLanguage, setSelectedPracticeLanguage] =
     useState("go");
   const [error, setError] = useState("");
+  const socket = useSocket(user);
   const [isJoinDialogOpen, setIsJoinDialogOpen] = useState(false);
   const [roomId, setRoomId] = useState("");
+  const [createGameRes, setCreateGameRes] = useState<{
+    message: string;
+    gameId: string;
+  } | null>(null);
+  const [createGameError, setCreateGameError] = useState("");
+  const { toast } = useToast();
   const navigate = useNavigate();
 
   function handleSetCodeLanguage(props: SetStateAction<string>) {
@@ -31,15 +45,83 @@ export default function RoomRaceCard() {
     setError("");
   }
 
-  function handleSubmit(e: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError("");
-    if (!selectedPracticeLanguage)
+    if (!selectedPracticeLanguage) {
       return setError("please select a language to practice");
-    navigate(
-      `/race/practice?lang=${encodeURIComponent(selectedPracticeLanguage)}`
-    );
+    }
+    // FIRST MAKE THE BACKEND REQUEST AND THEN GET THE ID
+    console.log("user is this ", user);
+
+    if (user.isGuest) {
+      axios
+        .post(
+          BACKEND_URL + "/game",
+          {},
+          {
+            headers: {
+              authorization: `Bearer ${localStorage.getItem("guest_auth_token")}`,
+            },
+          }
+        )
+        .then((res) => {
+          setCreateGameRes(res.data);
+        })
+        .catch((err) => {
+          setCreateGameError(err);
+        });
+    } else {
+      axios
+        .post(
+          BACKEND_URL + "/game",
+          {},
+          {
+            headers: {
+              authorization: `Bearer ${localStorage.getItem("auth_token")}`,
+            },
+          }
+        )
+        .then((res) => {
+          setCreateGameRes(res.data);
+        })
+        .catch((err) => {
+          setCreateGameError(err);
+        });
+    }
   }
+
+  useEffect(() => {
+    if (!createGameRes || createGameError.length > 0 || !socket) return;
+
+    socket.send(
+      JSON.stringify({
+        type: "JOIN_GAME",
+        payload: {
+          gameId: createGameRes.gameId,
+        },
+      })
+    );
+  }, [createGameError.length, createGameRes, socket]);
+
+  useEffect(() => {
+    if (!socket || !createGameRes || createGameError.length > 0) {
+      return;
+    }
+    socket.onmessage = function (event) {
+      const message = JSON.parse(event.data);
+      switch (message.t) {
+        case "JOIN_GAME":
+          navigate("/game/" + createGameRes.gameId + "/lobby");
+          break;
+        default:
+          toast({
+            title: message.m,
+          });
+          break;
+      }
+    };
+  }, [createGameError, createGameRes, navigate, socket, toast]);
 
   function handleJoinRoom() {
     if (roomId.trim() === "") {

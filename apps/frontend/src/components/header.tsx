@@ -1,7 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useRecoilRefresher_UNSTABLE, useRecoilValueLoadable } from "recoil";
 import userAtom from "@/store/atoms/userAtom";
-import { ChevronRight } from "lucide-react";
 import { Button } from "./ui/button";
 import MainLoader from "./ui/loader";
 import { ModeToggle } from "./ui/mode-toggle";
@@ -38,17 +37,8 @@ const Header = () => {
         >
           Log in
         </Link>
-        <Link
-          className="transition-all duration-300 hover:scale-110"
-          to="/auth/signup"
-        >
-          <button className="p-1 relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full"></div>
-            <div className="px-2 rounded-2xl relative group transition duration-200 text-white hover:bg-transparent flex justify-start items-center gap-2">
-              <p>Sign up</p>
-              <ChevronRight />
-            </div>
-          </button>
+        <Link to="/auth/signup">
+          <Button>Sign up</Button>
         </Link>
       </nav>
     );

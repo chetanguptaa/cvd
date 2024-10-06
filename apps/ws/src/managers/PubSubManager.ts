@@ -1,5 +1,9 @@
+import { config } from "dotenv";
+config();
 import { createClient, RedisClientType } from "redis";
 import { User } from "../classes/User";
+
+const REDIS_URL = process.env.REDIS_URL!;
 
 export class PubSubManager {
   private static instance: PubSubManager;
@@ -7,7 +11,9 @@ export class PubSubManager {
   private subscriptions: Map<string, User[]>; // game to users mapping
 
   private constructor() {
-    this.redisClient = createClient();
+    this.redisClient = createClient({
+      url: REDIS_URL,
+    });
     this.redisClient.connect();
     this.subscriptions = new Map();
   }
@@ -25,12 +31,7 @@ export class PubSubManager {
     }
     if (this.subscriptions.has(gameId)) {
       const subscriptions = this.subscriptions.get(gameId);
-      if (!subscriptions) return;
-      const userInSubscriptions = subscriptions.find((u) => u.id === user.id);
-      if (userInSubscriptions) return;
-      for (let i = 0; i < subscriptions.length; i++) {
-        subscriptions[i].socket.send(`${user.name} joined the game`);
-      }
+      if (!subscriptions || subscriptions.find((u) => u.id === user.id)) return;
       subscriptions.push(user);
       if (subscriptions.length === 1) {
         try {

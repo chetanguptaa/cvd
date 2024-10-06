@@ -1,16 +1,16 @@
 import { Icons } from "@/components/header/icons";
-import LandingWrapper from "@/wrappers/landing";
 import { ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import BannerSvg from "./_components/banner-svg";
 import HeroBanner from "./_components/hero-banner";
+import AppWrapper from "@/wrappers/AppWrapper";
 
 // TODO :- here if the userbase increase 🤞, we'll create a websocket connection here to show how many players are currently playing
 // TODO :- Take inspiration from chess.com landing page
 
 const LandingPage = () => {
   return (
-    <LandingWrapper>
+    <AppWrapper>
       <section>
         <div className="w-full bg-dot-black/[0.2]">
           <main className="flex flex-col items-center">
@@ -36,7 +36,7 @@ const LandingPage = () => {
           />
         </div>
       </section>
-    </LandingWrapper>
+    </AppWrapper>
   );
 };
 

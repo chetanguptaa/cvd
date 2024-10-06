@@ -43,7 +43,12 @@ class GameManager {
             },
           });
           if (!gameInDB) {
-            user.socket.send("Game does not exist");
+            user.socket.send(
+              JSON.stringify({
+                t: "JOIN_GAME",
+                e: "game does not exist",
+              })
+            );
             return;
           }
           if (!game) {
@@ -58,7 +63,12 @@ class GameManager {
           const gameId = message.payload.gameId as string;
           let game = this.games.find((g) => g.gameId === gameId);
           if (!game) {
-            user.socket.send("Game does not exist");
+            user.socket.send(
+              JSON.stringify({
+                t: "LEAVE_GAME",
+                e: "game does not exist",
+              })
+            );
             return;
           } else {
             game.removeUser(user);
@@ -69,7 +79,12 @@ class GameManager {
           const gameId = message.payload.gameId as string;
           let game = this.games.find((g) => g.gameId === gameId);
           if (!game) {
-            user.socket.send("Game does not exist");
+            user.socket.send(
+              JSON.stringify({
+                t: "USER_GAME_DETAILS",
+                e: "game does not exist",
+              })
+            );
             return;
           } else {
             await game.handleUserGameDetails(
@@ -79,7 +94,12 @@ class GameManager {
           }
         }
       } catch (error) {
-        user.socket.send("some error occured, please try again later");
+        user.socket.send(
+          JSON.stringify({
+            t: "ERROR",
+            e: "some error occured, please try again later",
+          })
+        );
         return;
       }
     });

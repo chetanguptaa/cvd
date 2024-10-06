@@ -1,7 +1,12 @@
+import { config } from "dotenv";
+config();
 import { createClient } from "redis";
 import prisma from "@vr/db";
 
+const REDIS_URL = process.env.REDIS_URL;
+
 const client = createClient({
+  url: REDIS_URL,
   socket: {
     reconnectStrategy: (retries) => Math.min(retries * 50, 1000),
   },

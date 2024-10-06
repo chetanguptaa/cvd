@@ -5,8 +5,7 @@ import { Suspense } from "react";
 import LandingPage from "./pages/landing/landing";
 import MainLoader from "./components/ui/loader";
 import RacePage from "./pages/app/race/race";
-import Header from "./components/header";
-import RacePractice from "./pages/app/race/practice/practice";
+import RoomRacePage from "./pages/app/race/room-race/room-race";
 
 function App() {
   return (
@@ -14,38 +13,10 @@ function App() {
       <Routes>
         <Route path="/auth/signin" element={<SigninPage />} />
         <Route path="/auth/signup" element={<SignupPage />} />
-        <Route
-          path="/race/practice"
-          element={
-            <>
-              <Header />
-              <RacePractice />
-            </>
-          }
-        />
+        <Route path="/race/room" element={<RoomRacePage />} />
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/race" element={<RacePage />} />
       </Routes>
-      <div className="container h-fit">
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <>
-                <Header />
-                <LandingPage />
-              </>
-            }
-          />
-          <Route
-            path="/race"
-            element={
-              <>
-                <Header />
-                <RacePage />
-              </>
-            }
-          />
-        </Routes>
-      </div>
     </Suspense>
   );
 }

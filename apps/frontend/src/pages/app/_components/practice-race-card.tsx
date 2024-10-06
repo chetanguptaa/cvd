@@ -1,12 +1,12 @@
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Users } from "lucide-react";
+import { ArrowRight, Target } from "lucide-react";
 import React, { SetStateAction, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Card, CardContent, CardHeader } from "../../../ui/card";
 import { cn } from "@/lib/utils";
-import LanguageDropdown from "./_components/language-dropdown";
+import LanguageDropdown from "./language-dropdown";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
-export default function MultiplayerRaceCard() {
+export default function PracticeRaceCard() {
   const [selectedPracticeLanguage, setSelectedPracticeLanguage] =
     useState("go");
   const [error, setError] = useState("");
@@ -23,23 +23,23 @@ export default function MultiplayerRaceCard() {
     if (!selectedPracticeLanguage)
       return setError("please select a language to practice");
     navigate(
-      `/race/multiplayer?lang=${encodeURIComponent(selectedPracticeLanguage)}`
+      `/race/practice?lang=${encodeURIComponent(selectedPracticeLanguage)}`
     );
   }
 
   return (
     <Card
       className="flex flex-col justify-between flex-1 border-2 border-warning"
-      data-cy="multiplayer-card"
+      data-cy="practice-card"
     >
       <CardHeader>
         <div className="grid text-center place-content-center">
-          <Users className="justify-self-center" size={40} />
+          <Target className="justify-self-center" size={40} />
           <h2 className="text-3xl font-bold text-warning font-special">
-            Multiplayer
+            Practice
           </h2>
           <p className="font-light">
-            Race against other people and see who can type the fastest!
+            Practice typing with a random snippet from your snippets
           </p>
         </div>
       </CardHeader>
@@ -64,7 +64,7 @@ export default function MultiplayerRaceCard() {
             className="relative justify-start border"
             data-cy="practice-button"
           >
-            Start Racing{" "}
+            Practice{" "}
             <ArrowRight
               size="20"
               className="absolute -translate-y-1/2 right-4 top-1/2"
