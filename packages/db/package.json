@@ -1,5 +1,5 @@
 {
-  "name": "@vr/db",
+  "name": "@cvd/db",
   "version": "1.0.0",
   "description": "",
   "main": "dist/index.js",
@@ -11,7 +11,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@types/node": "^20.11.24",
+    "@types/node": "^20.16.11",
     "prisma": "5.19.1"
   },
   "dependencies": {

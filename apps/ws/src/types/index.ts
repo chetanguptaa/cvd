@@ -1,4 +1,4 @@
-export const SUBSCRIBE = "SUBSCRIBE";
+export const UNSUBSCRIBE = "UNSUBSCRIBE";
 export const JOIN_GAME = "JOIN_GAME";
 export const LEAVE_GAME = "LEAVE_GAME";
 export const USER_GAME_DETAILS = "USER_GAME_DETAILS";

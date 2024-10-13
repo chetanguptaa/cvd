@@ -1,5 +1,5 @@
-import { IUser } from "@vr/common";
-import prisma from "@vr/db";
+import { IUser } from "@cvd/common";
+import prisma from "@cvd/db";
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 
@@ -11,13 +11,12 @@ const isTokenValid = async (
   next: NextFunction
 ) => {
   try {
-    const auth_header = req.headers["authorization"];
-    if (!auth_header) {
+    const token = extractJwtFromRequest(req);
+    if (!token) {
       return res.status(400).json({
         error: "Unauthorized",
       });
     }
-    const token = auth_header.split("Bearer ")[1];
     const user_data = jwt.verify(token, JWT_SECRET) as Omit<IUser, "email"> & {
       email: string;
     };
@@ -50,6 +49,16 @@ const isTokenValid = async (
       error: "Some error occoured, please try again later",
     });
   }
+};
+
+const extractJwtFromRequest = (req: Request): string | null => {
+  const authToken = req.cookies["auth-token"];
+  const guestAuthToken = req.cookies["guest-auth-token"];
+  let token = "";
+  if (authToken && authToken.length > 0) token = authToken;
+  else if (guestAuthToken && guestAuthToken.length > 0) token = guestAuthToken;
+  if (token.length === 0) return null;
+  return token;
 };
 
 export default isTokenValid;

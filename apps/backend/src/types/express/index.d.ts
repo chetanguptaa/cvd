@@ -1,4 +1,4 @@
-import { IGuest, IUser } from "@vr/common";
+import { IGuest, IUser } from "@cvd/common";
 
 export {};
 

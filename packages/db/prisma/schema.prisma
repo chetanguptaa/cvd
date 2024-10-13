@@ -15,49 +15,30 @@ datasource db {
 
 model User {
   id           String     @id @default(dbgenerated("concat('usr_', replace(cast(gen_random_uuid() as text), '-', ''))")) @db.Text
-  email        String     @unique
-  password     String
   name         String
   games        UserGame[]
   createdAt    DateTime   @default(now())
-  gamesWon     Game[]     @relation("userWinner")
-  gamesCreated Game[]     @relation("GameCreatorUser")
-}
-
-model Guest {
-  id           String     @id @default(dbgenerated("concat('gst_', replace(cast(gen_random_uuid() as text), '-', ''))")) @db.Text
-  username     String
-  games        UserGame[]
-  createdAt    DateTime   @default(now())
-  gamesWon     Game[]     @relation("GuestWinner")
-  gamesCreated Game[]     @relation("GameCreatorGuest")
+  gamesWon     Game[]     @relation("winner")
+  gamesCreated Game[]     @relation("creator")
 }
 
 model Game {
-  id               String     @id @default(dbgenerated("concat('gam_', replace(cast(gen_random_uuid() as text), '-', ''))")) @db.Text
-  users            UserGame[]
-  status           GameStatus @default(NOT_STARTED)
-  userWinner       User?      @relation("userWinner", fields: [userWinnerId], references: [id])
-  userWinnerId     String?    @db.Text
-  guestWinner      Guest?     @relation("GuestWinner", fields: [guestWinnerId], references: [id])
-  guestWinnerId    String?    @db.Text
-  createdByUser    User?      @relation("GameCreatorUser", fields: [createdByUserId], references: [id])
-  createdByUserId  String?    @db.Text
-  createdByGuest   Guest?     @relation("GameCreatorGuest", fields: [createdByGuestId], references: [id])
-  createdByGuestId String?    @db.Text
-  code             String
+  id          String     @id @default(dbgenerated("concat('gam_', replace(cast(gen_random_uuid() as text), '-', ''))")) @db.Text
+  status      GameStatus @default(NOT_STARTED)
+  winner      User?      @relation("winner", fields: [winnerId], references: [id])
+  winnerId    String?    @db.Text
+  createdBy   User?      @relation("creator", fields: [createdById], references: [id])
+  createdById String?    @db.Text
+  code        String
+  userGame    UserGame[]
 }
 
 model UserGame {
-  id      String  @id @default(dbgenerated("concat('grm_', replace(cast(gen_random_uuid() as text), '-', ''))")) @db.Text
-  user    User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId  String?
-  game    Game    @relation(fields: [gameId], references: [id], onDelete: Cascade)
-  gameId  String
-  guest   Guest?  @relation(fields: [guestId], references: [id], onDelete: Cascade)
-  guestId String? @db.Text
-
-  @@unique([userId, guestId, gameId])
+  id     String  @id @default(dbgenerated("concat('grm_', replace(cast(gen_random_uuid() as text), '-', ''))")) @db.Text
+  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String?
+  game   Game    @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  gameId String
 }
 
 enum GameStatus {

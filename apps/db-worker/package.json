@@ -10,8 +10,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@vr/common": "workspace:*",
-    "@vr/db": "workspace:*",
+    "@cvd/common": "workspace:*",
+    "@cvd/db": "workspace:*",
     "dotenv": "^16.4.5",
     "redis": "^4.7.0"
   }

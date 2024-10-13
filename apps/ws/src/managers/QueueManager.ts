@@ -29,7 +29,6 @@ export class QueueManager {
         userId: user.id,
         gameId,
         type,
-        isGuest: user.isGuest,
       })
     );
   }

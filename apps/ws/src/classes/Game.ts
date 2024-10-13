@@ -1,7 +1,7 @@
 import { queueManager } from "../managers/QueueManager";
 import { TUserGameDetails } from "../types";
 import { User } from "./User";
-import prisma from "@vr/db";
+import prisma from "@cvd/db";
 
 export class Game {
   public players: User[];
@@ -14,7 +14,10 @@ export class Game {
     player.socket.send(
       JSON.stringify({
         t: "JOIN_GAME",
-        m: "You have successfully, joined the game",
+        u: {
+          i: player.id,
+          n: player.name,
+        },
       })
     );
     this.gameId = gameId;
@@ -26,7 +29,7 @@ export class Game {
         user.socket.send(
           JSON.stringify({
             t: "JOIN_GAME",
-            m: "You are already part of the game",
+            e: "You are already part of the game",
           })
         );
         return;
@@ -49,10 +52,8 @@ export class Game {
             t: "JOIN_GAME",
             u: {
               i: user.id,
-              ig: user.isGuest,
               n: user.name,
             },
-            m: user.name + " have successfully, joined the game",
           })
         );
       }
@@ -61,17 +62,15 @@ export class Game {
           t: "JOIN_GAME",
           u: {
             i: user.id,
-            ig: user.isGuest,
             n: user.name,
           },
-          m: "You have successfully, joined the game",
         })
       );
       return;
     } catch (error) {
       user.socket.send(
         JSON.stringify({
-          t: "ERROR",
+          t: "JOIN_GAME",
           e: "Some error occured, please try again later",
         })
       );
@@ -100,7 +99,6 @@ export class Game {
             t: "LEAVE_GAME",
             u: {
               i: user.id,
-              ig: user.isGuest,
               n: user.name,
             },
             m: user.name + " have left the game",

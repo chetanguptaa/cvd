@@ -1,7 +1,7 @@
 import { config } from "dotenv";
 config();
 import { createClient } from "redis";
-import prisma from "@vr/db";
+import prisma from "@cvd/db";
 
 const REDIS_URL = process.env.REDIS_URL;
 
@@ -18,7 +18,6 @@ async function processDBRequest(json: string) {
   try {
     const request = JSON.parse(json) as {
       userId: string;
-      isGuest: boolean;
       gameId: string;
       type: "LEAVE_GAME" | "JOIN_GAME";
     };
@@ -28,9 +27,7 @@ async function processDBRequest(json: string) {
         await prisma.userGame.deleteMany({
           where: {
             gameId: request.gameId,
-            ...(request.isGuest ?
-              { guestId: request.userId }
-            : { userId: request.userId }),
+            userId: request.userId,
           },
         });
         console.log(
@@ -39,16 +36,10 @@ async function processDBRequest(json: string) {
         break;
       case "JOIN_GAME":
         await prisma.userGame.create({
-          data:
-            request.isGuest ?
-              {
-                guestId: request.userId,
-                gameId: request.gameId,
-              }
-            : {
-                userId: request.userId,
-                gameId: request.gameId,
-              },
+          data: {
+            userId: request.userId,
+            gameId: request.gameId,
+          },
         });
         console.log(
           `Processed JOIN_GAME for user ${request.userId}, game ${request.gameId}`

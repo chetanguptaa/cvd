@@ -16,6 +16,11 @@ wss.on("connection", async function connection(ws, req: Request) {
       if (user) gameManager.removeUser(user);
     });
   } catch (error) {
-    ws.send("You are not authorized");
+    ws.send(
+      JSON.stringify({
+        t: "AUTH",
+        e: "You are not authorized",
+      })
+    );
   }
 });

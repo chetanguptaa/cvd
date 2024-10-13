@@ -5,9 +5,10 @@ import {
   JOIN_GAME,
   LEAVE_GAME,
   TUserGameDetails,
+  UNSUBSCRIBE,
   USER_GAME_DETAILS,
 } from "../types";
-import prisma from "@vr/db";
+import prisma from "@cvd/db";
 
 class GameManager {
   private games: Game[];
@@ -65,7 +66,7 @@ class GameManager {
           if (!game) {
             user.socket.send(
               JSON.stringify({
-                t: "LEAVE_GAME",
+                t: "GAME",
                 e: "game does not exist",
               })
             );
@@ -81,7 +82,7 @@ class GameManager {
           if (!game) {
             user.socket.send(
               JSON.stringify({
-                t: "USER_GAME_DETAILS",
+                t: "GAME_DETAILS",
                 e: "game does not exist",
               })
             );
@@ -96,7 +97,7 @@ class GameManager {
       } catch (error) {
         user.socket.send(
           JSON.stringify({
-            t: "ERROR",
+            t: "GAME",
             e: "some error occured, please try again later",
           })
         );
