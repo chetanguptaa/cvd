@@ -1,8 +1,8 @@
 "use client";
 
-import SignalingManager from "@/lib/SignalingManager";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import useWebSocket, { ReadyState } from "react-use-websocket";
 
 export default function Lobby(props: {
   user?: {
@@ -13,60 +13,46 @@ export default function Lobby(props: {
   gameId: string;
   token?: string;
 }) {
+  const WS_URL = `ws://localhost:8080`;
   const router = useRouter();
-  const [users, setUsers] = useState<{ id: string; name: string }[]>([]);
-  if (!props.user) {
-    router.push("/");
-  }
+  const { sendJsonMessage, lastJsonMessage, readyState } = useWebSocket(
+    WS_URL,
+    {
+      share: true,
+      queryParams: {
+        token: props.token || "",
+      },
+    }
+  );
+
   useEffect(() => {
-    SignalingManager.getInstance(props.token).registerCallback(
-      "JOIN_GAME",
-      (u: { id: string; name: string }) => {
-        const user = users.find((user) => user.id === u.id);
-        if (user) return;
-        users.push(u);
-      },
-      "gameId-" + props.gameId
-    );
-    SignalingManager.getInstance(props.token).registerCallback(
-      "LEAVE_GAME",
-      (u: { id: string; name: string }) => {
-        const newUsers = [];
-        for (let i = 0; i < users.length; i++) {
-          if (users[i].id === u.id) continue;
-          else {
-            newUsers.push({
-              id: users[i].id,
-              name: users[i].name,
-            });
-          }
-        }
-        setUsers(newUsers);
-      },
-      "gameId-" + props.gameId
-    );
-    SignalingManager.getInstance(props.token).sendMessage({
+    if (readyState !== ReadyState.OPEN) return;
+    sendJsonMessage({
       type: "JOIN_GAME",
       payload: {
         gameId: props.gameId,
       },
     });
     return () => {
-      SignalingManager.getInstance(props.token).sendMessage({
+      sendJsonMessage({
         type: "LEAVE_GAME",
         payload: {
           gameId: props.gameId,
         },
       });
-      SignalingManager.getInstance(props.token).deRegisterCallback(
-        "JOIN_GAME",
-        "gameId-" + props.gameId
-      );
-      SignalingManager.getInstance(props.token).deRegisterCallback(
-        "LEAVE_GAME",
-        "gameId-" + props.gameId
-      );
     };
-  }, []);
-  return <div>{JSON.stringify(props.user, null, 2)}</div>;
+  }, [props.gameId, readyState, sendJsonMessage]);
+
+  useEffect(() => {
+    if (!props.user || !props.token) {
+      router.push("/");
+    }
+  }, [props.token, props.user, router]);
+
+  return (
+    <div>
+      {JSON.stringify(props.user, null, 2)}
+      {"last message " + lastJsonMessage}
+    </div>
+  );
 }

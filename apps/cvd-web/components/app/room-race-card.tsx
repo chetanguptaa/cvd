@@ -52,14 +52,7 @@ export default function RoomRaceCard() {
   }
 
   function handleJoinRoom() {
-    if (roomId.trim() === "") {
-      toast({
-        title: "Please enter a valid room id",
-        variant: "destructive",
-      });
-      return;
-    }
-    console.log(`Joining room: ${roomId}`);
+    router.push("/game/" + roomId + "/lobby");
     setIsJoinDialogOpen(false);
   }
 

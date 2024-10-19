@@ -34,7 +34,7 @@ model Game {
 }
 
 model UserGame {
-  id     String  @id @default(dbgenerated("concat('grm_', replace(cast(gen_random_uuid() as text), '-', ''))")) @db.Text
+  id     String  @id @default(dbgenerated("concat('ugm_', replace(cast(gen_random_uuid() as text), '-', ''))")) @db.Text
   user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId String?
   game   Game    @relation(fields: [gameId], references: [id], onDelete: Cascade)

@@ -35,6 +35,15 @@ async function processDBRequest(json: string) {
         );
         break;
       case "JOIN_GAME":
+        const userGame = await prisma.userGame.findFirst({
+          where: {
+            userId: request.userId,
+            gameId: request.gameId,
+          },
+        });
+        if (userGame) {
+          return;
+        }
         await prisma.userGame.create({
           data: {
             userId: request.userId,
