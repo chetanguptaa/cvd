@@ -26,7 +26,15 @@ class GameManager {
     return this.instance;
   }
   addUser(user: User) {
-    if (this.users.find((u) => u.id === user.id)) return;
+    for (let i = 0; i < this.users.length; i++) {
+      if (user.id === this.users[i].id) {
+        this.users[i] = {
+          ...user,
+        };
+        this.addHandler(user);
+        return;
+      }
+    }
     this.users.push(user);
     this.addHandler(user);
   }
@@ -34,8 +42,6 @@ class GameManager {
     this.users = this.users.filter((user) => user.socket !== u.socket);
   }
   private async addHandler(user: User) {
-    console.log("in add handler");
-
     user.socket.on("message", async (data) => {
       try {
         console.log(data.toString(), " data is this ");

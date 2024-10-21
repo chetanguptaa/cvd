@@ -11,6 +11,11 @@ wss.on("connection", async function connection(ws, req: Request) {
     const user = await extractAuthUser(token, ws);
     if (user) {
       gameManager.addUser(user);
+      ws.send(
+        JSON.stringify({
+          type: "SERVER_READY",
+        })
+      );
     }
     ws.on("close", () => {
       if (user) gameManager.removeUser(user);

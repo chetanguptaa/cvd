@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import useWebSocket, { ReadyState } from "react-use-websocket";
 
 export default function Lobby(props: {
@@ -15,6 +15,8 @@ export default function Lobby(props: {
 }) {
   const WS_URL = `ws://localhost:8080`;
   const router = useRouter();
+  const [isServerReady, setIsServerReady] = useState(false);
+
   const { sendJsonMessage, lastJsonMessage, readyState } = useWebSocket(
     WS_URL,
     {
@@ -26,13 +28,24 @@ export default function Lobby(props: {
   );
 
   useEffect(() => {
-    if (readyState !== ReadyState.OPEN) return;
-    sendJsonMessage({
-      type: "JOIN_GAME",
-      payload: {
-        gameId: props.gameId,
-      },
-    });
+    // @ts-expect-error TODO -> change the type from unknown
+    if (lastJsonMessage && lastJsonMessage.type === "SERVER_READY") {
+      setIsServerReady(true);
+    }
+  }, [lastJsonMessage]);
+
+  useEffect(() => {
+    if (isServerReady && readyState === ReadyState.OPEN) {
+      sendJsonMessage({
+        type: "JOIN_GAME",
+        payload: {
+          gameId: props.gameId,
+        },
+      });
+    }
+  }, [isServerReady, readyState, sendJsonMessage, props.gameId]);
+
+  useEffect(() => {
     return () => {
       sendJsonMessage({
         type: "LEAVE_GAME",
