@@ -6,9 +6,15 @@ import prisma from "@cvd/db";
 export class Game {
   public players: User[];
   public gameId: string;
+  private countdownInterval: NodeJS.Timeout | null;
+  private countdownTime: number;
+  private hasStarted: boolean;
 
   constructor(gameId: string, player: User) {
     this.players = [];
+    this.countdownInterval = null;
+    this.countdownTime = 30;
+    this.hasStarted = false;
     this.players.push(player);
     queueManager.publishMessage(player, gameId, "JOIN_GAME");
     player.socket.send(
@@ -22,6 +28,7 @@ export class Game {
     );
     this.gameId = gameId;
   }
+
   public addUser(user: User): void {
     try {
       const isPlayerPartOfTheGame = this.isPlayerPartOfTheGame(user);
@@ -66,16 +73,58 @@ export class Game {
           },
         })
       );
+      if (this.players.length >= 2 && this.countdownInterval === null) {
+        this.startCountdown();
+      }
       return;
     } catch (error) {
       user.socket.send(
         JSON.stringify({
           t: "JOIN_GAME",
-          e: "Some error occured, please try again later",
+          e: "Some error occurred, please try again later",
         })
       );
       return;
     }
+  }
+
+  private startCountdown(): void {
+    this.countdownInterval = setInterval(() => {
+      if (this.countdownTime > 0) {
+        this.broadcastCountdown(this.countdownTime);
+        this.countdownTime--;
+      } else {
+        this.endCountdown();
+      }
+    }, 1000);
+  }
+
+  private broadcastCountdown(timeLeft: number): void {
+    const message = JSON.stringify({
+      t: "COUNTDOWN",
+      timeLeft: timeLeft,
+    });
+    for (const player of this.players) {
+      player.socket.send(message);
+    }
+  }
+
+  private endCountdown(): void {
+    clearInterval(this.countdownInterval as NodeJS.Timeout);
+    this.countdownInterval = null;
+    this.countdownTime = 30;
+    const users = this.players.map((player) => ({
+      userId: player.id,
+      userName: player.name,
+    }));
+    const message = JSON.stringify({
+      t: "GAME_STARTED",
+      users: users,
+    });
+    for (const player of this.players) {
+      player.socket.send(message);
+    }
+    this.hasStarted = true;
   }
 
   public removeUser(user: User): void {

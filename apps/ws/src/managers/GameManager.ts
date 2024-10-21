@@ -44,9 +44,7 @@ class GameManager {
   private async addHandler(user: User) {
     user.socket.on("message", async (data) => {
       try {
-        console.log(data.toString(), " data is this ");
         const message = JSON.parse(data.toString());
-        console.log(message, " is this ");
         if (message.type === JOIN_GAME) {
           const res = joinGameSchema.safeParse(message);
           if (res.error) {

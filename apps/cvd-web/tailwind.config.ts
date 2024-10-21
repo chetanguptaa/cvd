@@ -81,6 +81,10 @@ const config: Config = {
         "scrollbar-track": "#f0f0f0",
       },
       keyframes: {
+        float: {
+          "0%": { transform: "translateY(100vh)" },
+          "100%": { transform: "translateY(-100vh)" },
+        },
         "accordion-down": {
           from: { height: "0" },
           to: { height: "var(--radix-accordion-content-height)" },
@@ -154,6 +158,7 @@ const config: Config = {
         fade: "fade 1s ease-in-out",
         gradient: "gradient 0.75s linear infinite",
         shine: "shine 8s ease-in-out infinite",
+        float: "float linear infinite",
       },
     },
   },
