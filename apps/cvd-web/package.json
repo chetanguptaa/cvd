@@ -34,6 +34,7 @@
     "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
+    "@prisma/nextjs-monorepo-workaround-plugin": "^5.21.1",
     "@types/jsonwebtoken": "^9.0.6",
     "@types/lodash.throttle": "^4.1.9",
     "@types/node": "^20",

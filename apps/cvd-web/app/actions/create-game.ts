@@ -3,9 +3,7 @@
 import prisma from "@cvd/db";
 import getUser from "./get-user";
 
-export default async function createGame(): Promise<
-  { success: boolean } & { error?: string; gameId?: string }
-> {
+export default async function createGame(): Promise<{ success: boolean } & { error?: string; gameId?: string }> {
   try {
     const res = await getUser();
     if (res.error) {
