@@ -8,13 +8,15 @@ export class Game {
   public gameId: string;
   private countdownInterval: NodeJS.Timeout | null;
   private countdownTime: number;
-  private hasStarted: boolean;
+
+  // 0 means game has not yet started, 1 means game has started and 2 means game has ended
+  public gameStatus: 0 | 1 | 2;
 
   constructor(gameId: string, player: User) {
     this.players = [];
     this.countdownInterval = null;
     this.countdownTime = 30;
-    this.hasStarted = false;
+    this.gameStatus = 0;
     this.players.push(player);
     queueManager.publishMessage(player, gameId, "JOIN_GAME");
     player.socket.send(
@@ -124,7 +126,7 @@ export class Game {
     for (const player of this.players) {
       player.socket.send(message);
     }
-    this.hasStarted = true;
+    this.gameStatus = 1;
   }
 
   public removeUser(user: User): void {

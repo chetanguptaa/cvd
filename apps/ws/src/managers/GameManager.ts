@@ -6,6 +6,8 @@ import {
   joinGameSchema,
   LEAVE_GAME,
   leaveGameSchema,
+  SUBSCRIBE,
+  subscribeGameSchema,
   USER_GAME_DETAILS,
   userGameDetailsSchema,
 } from "../types";
@@ -93,6 +95,41 @@ class GameManager {
             game.removeUser(user);
           }
           await pubSubManager.unsubscribe(user, gameId);
+        }
+        if (message.type === SUBSCRIBE) {
+          const res = subscribeGameSchema.safeParse(message);
+          if (res.error) {
+            return;
+          }
+          const gameId = res.data.payload.gameId;
+          const game = this.games.find((g) => g.gameId === gameId);
+          if (!game) return;
+          const index = game.players.findIndex((p) => p.id === user.id);
+          if (index === -1) {
+            user.socket.send(
+              JSON.stringify({
+                e: "you are not part of the game",
+              })
+            );
+            return;
+          }
+          if (game.gameStatus === 0) {
+            user.socket.send(
+              JSON.stringify({
+                e: "Game has not started yet",
+              })
+            );
+            return;
+          }
+          if (game.gameStatus === 2) {
+            user.socket.send(
+              JSON.stringify({
+                e: "Game has already ended",
+              })
+            );
+            return;
+          }
+          game.players[index] = user;
         }
         if (message.type === USER_GAME_DETAILS) {
           const res = userGameDetailsSchema.safeParse(message);

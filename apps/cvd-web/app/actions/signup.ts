@@ -38,6 +38,8 @@ export default async function signup(): Promise<{
       },
     };
   } catch (error) {
+    console.log("error is this ", error);
+
     return {
       success: false,
       error: "some error occured, please try again later",
